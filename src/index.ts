@@ -1,14 +1,12 @@
 import express, {type Express, type Request, type Response } from 'express';
 import {cfg} from './cfg.ts';
+import {Logger as logger} from './logger/logger.ts';
 
 // Create Express instance
 const app: Express = express();
 
-// Disable framework broadcasting
-app.disable('x-powered-by');
-
-// Process all the requests as json
-app.use(express.json());
+app.disable('x-powered-by');    // Disable framework broadcasting
+app.use(express.json());        // Process all the requests as json
 
 // Mock serving the main page
 app.get('/', (req, res) => {
@@ -22,7 +20,6 @@ app.use((req: Request, res: Response) => {
 
 // Start listening
 app.listen(cfg.server_port, () => {
-    console.log(`Server is up and running on port ${cfg.server_port}`);
+    //console.log(`Server is up and running on port ${cfg.server_port}`);
+    logger.info('APP', `Server is up and running on port ${cfg.server_port}`)
 });
-
-

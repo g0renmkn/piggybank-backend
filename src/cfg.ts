@@ -1,15 +1,16 @@
 import {config} from "dotenv";
+import {Logger as logger} from './logger/logger.ts';
 
 // Check the environment we are running (test, dev, or other)
 if (process.env.BUN_ENV=="test" || process.env.BUN_ENV=="dev") {
-    console.log(`[CONFIG] Loading '.env.${process.env.BUN_ENV}'...`);
+    logger.info('CONFIG', `Loading '.env.${process.env.BUN_ENV}'...`);
     config({
         path: `./.env.${process.env.BUN_ENV}`, 
         override: true
     });
 }
 else {
-    console.log("[CONFIG] Loading default env file");
+    logger.info('CONFIG', '[CONFIG] Loading default env file');
     config();
 }
 
