@@ -135,3 +135,6 @@ dist
 
 # other backup files
 *~
+
+# Old API reference document
+doc/piggybank_reference.json
