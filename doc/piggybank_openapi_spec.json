@@ -114,6 +114,7 @@
                                         "weekly",
                                         "biweekly",
                                         "monthly",
+                                        "bimonthly",
                                         "quarterly",
                                         "yearly"
                                     ]
@@ -181,6 +182,7 @@
                     "weekly",
                     "biweekly",
                     "monthly",
+                    "bimonthly",
                     "quarterly",
                     "yearly"
                 ]

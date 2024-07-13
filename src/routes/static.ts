@@ -32,6 +32,7 @@ routes.get("/bankperiodicities", (req: Request, res: Response) => {
         "weekly",
         "biweekly",
         "monthly",
+        "bimonthly",
         "quarterly",
         "yearly"
     ];
