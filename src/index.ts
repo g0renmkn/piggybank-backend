@@ -2,6 +2,7 @@ import express, {type Express, type Request, type Response } from 'express';
 import {cfg} from './cfg.ts';
 import {Logger as logger} from './logger/logger.ts';
 import infoRoute from './routes/info.ts';
+import staticRoutes from './routes/static.ts';
 
 // Create Express instance
 const app: Express = express();
@@ -15,7 +16,8 @@ app.get('/', (req: Request, res: Response) => {
 })
 
 // Include routes
-app.use('', infoRoute);     // /info endpoint route
+app.use('', infoRoute);             // /info endpoint route
+app.use('/static', staticRoutes);   // /static routes
 
 // Process any other endpoints that were not considered
 app.use((req: Request, res: Response) => {
