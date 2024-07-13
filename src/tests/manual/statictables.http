@@ -1,0 +1,11 @@
+###
+# Get Movement types
+GET http://localhost:4343/static/movtypes
+
+###
+# Get Bank Periodicities
+GET http://localhost:4343/static/bankperiodicities
+
+###
+# Get Asset Types
+GET http://localhost:4343/static/assettypes
