@@ -1,10 +1,10 @@
-/**
- * staticTables.ts
- * 
- * File that implements the model for the static tables
- */
-export default class StaticTables {
-    // Get Movement types
+export class PiggybankModel {
+
+    /**
+     * Get static table of Movement Types
+     * 
+     * @returns Array of possible values
+     */
     static getMovementTypes(): string[] {
         return [
             "deposit",
@@ -21,7 +21,12 @@ export default class StaticTables {
         ];
     }
 
-    // Get Bank Periodicities
+
+    /**
+     * Get static table of Bank Periodicities
+     * 
+     * @returns Array of possible values
+     */
     static getBankPeriodicities(): string[] {
         return [
             "one_time",
@@ -34,7 +39,12 @@ export default class StaticTables {
         ];
     }
 
-    // Get Asset Types
+
+    /**
+     * Get static table of Asset Types
+     * 
+     * @returns Array of possible values
+     */
     static getAssetTypes(): string[] {
         return [
             "fiat",
