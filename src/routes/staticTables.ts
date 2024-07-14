@@ -1,11 +1,11 @@
 /**
- * static.ts
+ * staticTables.ts
  * 
  * Implementation of the /static route for static table endpoints.
  * 
  */
 import { Router, type Request, type Response } from "express";
-import StaticController from '../controllers/static.ts';
+import StaticController from '../controllers/staticTables.ts';
 
 const routes: Router = Router();
 

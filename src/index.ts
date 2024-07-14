@@ -1,8 +1,8 @@
 import express, {type Express, type Request, type Response } from 'express';
-import {cfg} from './cfg.ts';
 import {Logger as logger} from './logger/logger.ts';
+import {cfg} from './cfg.ts';
 import infoRoute from './routes/info.ts';
-import staticRoutes from './routes/static.ts';
+import staticRoutes from './routes/staticTables.ts';
 
 // Create Express instance
 const app: Express = express();

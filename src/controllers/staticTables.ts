@@ -1,5 +1,5 @@
 /**
- * static.ts
+ * staticTables.ts
  * 
  * File that implementes the controller functions for the static tables
  * 
