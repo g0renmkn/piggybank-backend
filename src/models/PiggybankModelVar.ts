@@ -37,10 +37,12 @@ const assetTypesTable = [
  * Piggybank Model class
  */
 export class PiggybankModelVar implements PiggybankModel {
+    bankAccountsCtr: number;
     bankAccounts: BankAccountTypeExt[];
 
     constructor() {
         this.bankAccounts = [];
+        this.bankAccountsCtr = 0;
     }
 
 
@@ -90,15 +92,22 @@ export class PiggybankModelVar implements PiggybankModel {
      * 
      * @returns An object with the newly created account data
      */
-    createBankAccount = (acc: BankAccountType): BankAccountTypeExt => {
-        // ToDo
-        return {
-            "id": 0,
-            "name": "dummy",
-            "iban": "dummy",
-            "closed": "",
-            "comments": "dummy"
-        }
+    createBankAccount = (acc: BankAccountType[]): BankAccountTypeExt[] => {
+        let retArray: BankAccountTypeExt[] = [];
+        
+        acc.forEach(item => {
+            this.bankAccountsCtr++;
+
+            const retItem = {
+                id: this.bankAccountsCtr,
+                ... item
+            }
+
+            retArray.push(retItem);
+            this.bankAccounts.push(retItem);
+        })
+
+        return retArray;
     }
 
     /**
@@ -109,15 +118,25 @@ export class PiggybankModelVar implements PiggybankModel {
      * 
      * @returns An updated account object
      */
-    updateBankAccount = (id: number, data: BankAccountType): BankAccountTypeExt => {
-        // ToDo
-        return {
-            "id": 0,
-            "name": "dummy",
-            "iban": "dummy",
-            "closed": "",
-            "comments": "dummy"
+    updateBankAccount = (id: number, data: Partial<BankAccountType>): BankAccountTypeExt => {
+        const idx: number = this.bankAccounts.findIndex((itm) => itm.id === id);
+
+        if(idx === -1) {
+            throw({
+                err: "ACC_NOT_FOUND",
+                message: `The account number with ID=${id} does not exist.`
+            });
         }
+        else {
+            const updatedBankAccount = {
+                ... this.bankAccounts[idx],
+                ... data
+            }
+
+            this.bankAccounts[idx] = updatedBankAccount;
+        }
+
+        return this.bankAccounts[idx];
     }
 
     /**
@@ -125,10 +144,24 @@ export class PiggybankModelVar implements PiggybankModel {
      * 
      * @param id ID of the account to be deleted
      * 
-     * @returns True if the account has been correctly deleted
+     * @returns The deleted account object data
      */
-    deleteBankAccount = (id: number): boolean => {
-        // ToDo
-        return false;
+    deleteBankAccount = (id: number): BankAccountTypeExt => {
+        const idx: number = this.bankAccounts.findIndex((itm) => itm.id === id);
+
+        if(idx === -1) {
+            throw({
+                err: "ACC_NOT_FOUND",
+                message: `The account number with ID=${id} does not exist.`
+            });
+        }
+        else {
+
+        }
+
+        const deletedAccount = this.bankAccounts[idx];
+        this.bankAccounts.splice(idx, 1);
+
+        return deletedAccount;
     }
 }

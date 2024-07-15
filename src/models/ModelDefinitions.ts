@@ -8,6 +8,8 @@ export const bankAccountSchema = z.object({
     comments: z.string()
 })
 
+export const bankAccountArraySchema = z.array(bankAccountSchema);
+
 // Infer type based on Schema
 export type BankAccountType = z.infer<typeof bankAccountSchema>;
 
@@ -61,7 +63,7 @@ export interface PiggybankModel {
      * 
      * @returns An object with the newly created account data
      */
-    createBankAccount(acc: BankAccountType): BankAccountTypeExt;
+    createBankAccount(acc: BankAccountType[]): BankAccountTypeExt[];
 
     /**
      * Update an existing bank account
@@ -71,14 +73,14 @@ export interface PiggybankModel {
      * 
      * @returns An updated account object
      */
-    updateBankAccount(id: number, data: BankAccountType): BankAccountTypeExt;
+    updateBankAccount(id: number, data: Partial<BankAccountType>): BankAccountTypeExt;
 
     /**
      * Delete an existing bank account
      * 
      * @param id ID of the account to be deleted
      * 
-     * @returns True if the account has been correctly deleted
+     * @returns Data of the deleted bank account
      */
-    deleteBankAccount(id: number): boolean;
+    deleteBankAccount(id: number): BankAccountTypeExt;
 }
