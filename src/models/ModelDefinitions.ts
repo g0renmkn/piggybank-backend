@@ -1,11 +1,17 @@
+import { z } from "zod";
 
-export type BankAccountType = {
-    "name": string;
-    "iban": string;
-    "closed": string;
-    "comments": string;
-}
+// Schema for bank account validation
+export const bankAccountSchema = z.object({
+    name: z.string(),
+    iban: z.string(),
+    closed: z.string(),
+    comments: z.string()
+})
 
+// Infer type based on Schema
+export type BankAccountType = z.infer<typeof bankAccountSchema>;
+
+// Extended type to include "id" 
 export type BankAccountTypeExt = {
     "id": number;
     "name": string;
@@ -14,6 +20,11 @@ export type BankAccountTypeExt = {
     "comments": string;
 }
 
+/**
+ * PiggybankModel
+ * 
+ * Piggybank data model object
+ */
 export interface PiggybankModel {
     /**
          * Get static table of Movement Types
