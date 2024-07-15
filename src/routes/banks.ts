@@ -14,6 +14,9 @@ export default function buildBanksRoutes(pbm: PiggybankModel) {
     const banksController = new BanksController(pbm)
     
     routes.get("/accounts", banksController.getBankAccounts);
+    routes.post("/accounts", banksController.postBankAccounts);
+    routes.patch("/accounts/:id", banksController.patchBankAccount);
+    routes.delete("/accounts/:id", banksController.deleteBankAccount);
     
     return routes;
 }
