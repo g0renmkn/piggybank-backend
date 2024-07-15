@@ -5,26 +5,28 @@
  * 
  */
 import {type Request, type Response} from 'express';
-import { PiggybankModel } from '../models/PiggybankModel.ts';
+import { type PiggybankModel } from '../models/ModelDefinitions.ts';
 
-// Process the request to get the table of movement types
-function _getMovTypes(req: Request, res: Response) {
-    res.status(200).json(PiggybankModel.getMovementTypes());
-}
 
-// Process the request to get the table of bank periodicities
-function _getBankPeriodicities(req: Request, res: Response) {
-    res.status(200).json(PiggybankModel.getBankPeriodicities());
-}
+export default class StaticTablesController {
+    piggybankModel: PiggybankModel;
 
-// Process the request to get the table of asset types
-function _getAssetTypes(req: Request, res: Response) {
-    res.status(200).json(PiggybankModel.getAssetTypes());
-}
+    constructor(pbm: PiggybankModel) {
+        this.piggybankModel = pbm;
+    }
 
-// Export the default object
-export default {
-    getMovTypes: _getMovTypes,
-    getBankPeriodicities: _getBankPeriodicities,
-    getAssetTypes: _getAssetTypes
+    // Process the request to get the table of movement types
+    getMovTypes = (req: Request, res: Response): void => {
+        res.status(200).json(this.piggybankModel.getMovementTypes());
+    }
+
+    // Process the request to get the table of bank periodicities
+    getBankPeriodicities = (req: Request, res: Response): void => {
+        res.status(200).json(this.piggybankModel.getBankPeriodicities());
+    }
+    
+    // Process the request to get the table of asset types
+    getAssetTypes = (req: Request, res: Response): void => {
+        res.status(200).json(this.piggybankModel.getAssetTypes());
+    }
 }

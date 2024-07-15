@@ -4,13 +4,18 @@
  * Implementation of the /static route for static table endpoints.
  * 
  */
-import { Router, type Request, type Response } from "express";
+import { Router } from "express";
 import StaticController from '../controllers/staticTables.ts';
+import { type PiggybankModel } from '../models/ModelDefinitions.ts';
 
-const routes: Router = Router();
 
-routes.get("/movtypes", StaticController.getMovTypes);
-routes.get("/bankperiodicities", StaticController.getBankPeriodicities);
-routes.get("/assettypes", StaticController.getAssetTypes);
-
-export default routes;
+export default function buildStaticTablesRoutes(pbm: PiggybankModel) {
+    const routes: Router = Router();
+    const staticController = new StaticController(pbm)
+    
+    routes.get("/movtypes", staticController.getMovTypes);
+    routes.get("/bankperiodicities", staticController.getBankPeriodicities);
+    routes.get("/assettypes", staticController.getAssetTypes);
+    
+    return routes;
+}
