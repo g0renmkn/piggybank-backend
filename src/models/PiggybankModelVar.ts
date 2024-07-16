@@ -1,4 +1,5 @@
 import { type BankAccountType, type BankAccountTypeExt, type PiggybankModel } from "./ModelDefinitions";
+import { PBNotFoundError } from "./PiggybankModelErrors";
 
 
 const movementTypesTable = [
@@ -122,10 +123,7 @@ export class PiggybankModelVar implements PiggybankModel {
         const idx: number = this.bankAccounts.findIndex((itm) => itm.id === id);
 
         if(idx === -1) {
-            throw({
-                err: "ACC_NOT_FOUND",
-                message: `The account number with ID=${id} does not exist.`
-            });
+            throw(new PBNotFoundError(`The account number with ID=${id} does not exist.`));
         }
         else {
             const updatedBankAccount = {
@@ -150,10 +148,7 @@ export class PiggybankModelVar implements PiggybankModel {
         const idx: number = this.bankAccounts.findIndex((itm) => itm.id === id);
 
         if(idx === -1) {
-            throw({
-                err: "ACC_NOT_FOUND",
-                message: `The account number with ID=${id} does not exist.`
-            });
+            throw(new PBNotFoundError(`The account number with ID=${id} does not exist.`));
         }
         else {
 

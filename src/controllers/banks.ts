@@ -10,6 +10,7 @@ import {
     bankAccountSchema,
     bankAccountArraySchema
 } from '../models/ModelDefinitions.ts';
+import { PBNotFoundError } from '../models/PiggybankModelErrors.ts';
 
 
 /**
@@ -83,7 +84,7 @@ export default class BanksController {
                 res.status(200).json(updatedItem)
             }
             catch(err:any) {
-                if(err.err === "ACC_NOT_FOUND")
+                if(err instanceof PBNotFoundError)
                 {
                     res.status(404).json(err);
                 }
@@ -114,7 +115,7 @@ export default class BanksController {
             }
         }
         catch(err:any) {
-            if(err.err === "ACC_NOT_FOUND")
+            if(err instanceof PBNotFoundError)
             {
                 res.status(404).json(err);
             }
