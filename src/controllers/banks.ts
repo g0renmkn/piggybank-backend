@@ -8,9 +8,10 @@ import {type Request, type Response} from 'express';
 import { 
     type PiggybankModel, 
     bankAccountSchema,
-    bankAccountArraySchema
+    bankAccountArraySchema,
+    type BankAccountTypeExt
 } from '../models/ModelDefinitions.ts';
-import { PBNotFoundError } from '../models/PiggybankModelErrors.ts';
+import { PBDuplicateRecord, PBNotFoundError } from '../models/PiggybankModelErrors.ts';
 
 
 /**
@@ -56,7 +57,17 @@ export default class BanksController {
             res.status(400).json(validatedSchema.error);
         }
         else {
-            res.status(200).json(this.piggybankModel.createBankAccount(validatedSchema.data));
+            let ret: BankAccountTypeExt[];
+            try {
+                ret = this.piggybankModel.createBankAccount(validatedSchema.data);
+                res.status(200).json(ret);
+            }
+            catch(err: any) {
+                if(err instanceof PBDuplicateRecord) {
+                    res.status(403).json(err);
+                }
+            }
+            
         }
     }
 

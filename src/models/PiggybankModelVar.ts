@@ -1,5 +1,5 @@
 import { type BankAccountType, type BankAccountTypeExt, type PiggybankModel } from "./ModelDefinitions";
-import { PBNotFoundError } from "./PiggybankModelErrors";
+import { PBDuplicateRecord, PBNotFoundError } from "./PiggybankModelErrors";
 
 
 const movementTypesTable = [
@@ -96,6 +96,23 @@ export class PiggybankModelVar implements PiggybankModel {
     createBankAccount = (acc: BankAccountType[]): BankAccountTypeExt[] => {
         let retArray: BankAccountTypeExt[] = [];
         
+        // Check if any of the input names already exist
+        const inputNames: string[] = acc.map((ob) => {return ob.name});
+        const duplicatedByName = this.bankAccounts.filter((ob) => {return inputNames.includes(ob.name)});
+        const uniqueNames = new Set(inputNames);  // Check if the name is duplicated in the inputs
+        if(duplicatedByName.length > 0 || inputNames.length !== uniqueNames.size) {
+            throw(new PBDuplicateRecord());
+        }
+
+        // Check if any of the input IBANs already exist
+        const inputNumbers: string[] = acc.map((ob) => {return ob.iban});
+        const duplicatedByIBAN = this.bankAccounts.filter((ob) => {return inputNumbers.includes(ob.iban)});
+        const uniqueNumbers = new Set(inputNumbers);  // Check if the IBAN is duplicated in the inputs
+        if(duplicatedByIBAN.length > 0 || inputNumbers.length !== uniqueNumbers.size) {
+            throw(new PBDuplicateRecord());
+        }
+        
+        // No duplicates, add the new items
         acc.forEach(item => {
             this.bankAccountsCtr++;
 
