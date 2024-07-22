@@ -2,25 +2,33 @@ import { z } from "zod";
 
 // Schema for bank account validation
 export const bankAccountSchema = z.object({
-    name: z.string(),
-    iban: z.string(),
-    closed: z.string(),
-    comments: z.string()
+    name: z
+        .string()
+        .max(20, "Account 'name' is too long (max=20)"),
+    iban: z
+        .string()
+        .max(24, "Account 'IBAN' is too long (max=24)"),
+    closed: z
+        .string()
+        .datetime("Date must follow the 'YYYY-MM-DDTHH:MM:SS.uuuZ format'")
+        .nullish()
+        .or(z.string().max(0, "What the fuck are you doing?"))
+        .default(""),
+    comments: z
+        .string()
+        .optional()
+        .default("")
 })
 
+// Schema for an array of bank accounts
 export const bankAccountArraySchema = z.array(bankAccountSchema);
 
 // Infer type based on Schema
 export type BankAccountType = z.infer<typeof bankAccountSchema>;
 
-// Extended type to include "id" 
-export type BankAccountTypeExt = {
-    "id": number;
-    "name": string;
-    "iban": string;
-    "closed": string;
-    "comments": string;
-}
+// Extended type to include "id"
+export type BankAccountTypeExt = {"id": number} & BankAccountType;
+
 
 /**
  * PiggybankModel

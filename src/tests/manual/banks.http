@@ -11,10 +11,15 @@ content-type: application/json
         "comments": "Main fake account"
     },
     {
-        "name": "Fake account the second",
+        "name": "Second fake account",
         "iban": "ES15123141243123",
-        "closed": "",
         "comments": "Secondary fake account"
+    },
+    {
+        "name": "Third fake account",
+        "iban": "ES2712341234123456785678",
+        "closed": "2024-07-22T00:39:58.891Z",
+        "comments": "This is the third account"
     }
 ]
 
