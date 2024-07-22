@@ -44,14 +44,30 @@ export default class ErrorResponses {
     /**
      * ErrValidationError()
      * 
+     * Display the first found error while validating an input
+     * 
      * @param valResult Validation result object
      */
-    static ErrValidationError(valResult: object): ErrObject {
-        return {
+    static ErrValidationError(valResult: any): ErrObject {
+        let ret = {
             err: "ErrValidationError",
-            message: `There were problems validating data:`,
-            data: []
+            message: 'There were problems validating data',
+            details: ""
         }
+
+        if("issues" in valResult) {
+            let issue = valResult.issues[0];
+            
+            if(issue.path.length > 1) {
+                ret.message += ` on element ${issue.path[0]}, field '${issue.path[1]}'`
+            }
+            else {
+                ret.message += ` on field '${issue.path[0]}'`
+            }
+            ret.details = issue.message;
+        }
+
+        return ret;
     }
 
 

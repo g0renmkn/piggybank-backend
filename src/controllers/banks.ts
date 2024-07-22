@@ -4,14 +4,23 @@
  * File that implementes the controller functions for the bank management endpoints
  * 
  */
-import {type Request, type Response} from 'express';
+import {
+    type Request, 
+    type Response
+} from 'express';
+
 import { 
     type PiggybankModel, 
     bankAccountSchema,
     bankAccountArraySchema,
     type BankAccountTypeExt
 } from '../models/ModelDefinitions.ts';
-import { PBDuplicateRecord, PBNotFoundError } from '../models/PiggybankModelErrors.ts';
+
+import {
+    PBDuplicateRecord,
+    PBNotFoundError
+} from '../models/PiggybankModelErrors.ts';
+
 import ErrorResponses from './ErrorResponses.ts';
 
 
@@ -54,12 +63,14 @@ export default class BanksController {
      */
     postBankAccounts = (req: Request, res: Response): void => {
         const validatedSchema = bankAccountArraySchema.safeParse(req.body);
+        
         if(validatedSchema.error) {
-            res.status(400).json(validatedSchema.error);
+            const ret = ErrorResponses.ErrValidationError(validatedSchema.error);
+            res.status(400).json(ret);
         }
         else {
-            let ret: BankAccountTypeExt[];
             try {
+                let ret: BankAccountTypeExt[];
                 ret = this.piggybankModel.createBankAccount(validatedSchema.data);
                 res.status(200).json(ret);
             }
@@ -71,7 +82,6 @@ export default class BanksController {
                     res.status(500).json(ErrorResponses.ErrUnexpected());
                 }
             }
-            
         }
     }
 
@@ -91,7 +101,8 @@ export default class BanksController {
         // Validate the input partially (just for the provided fields)
         const validatedSchema = bankAccountSchema.partial().safeParse(req.body);
         if(validatedSchema.error) {
-            res.status(400).json(validatedSchema.error);
+            const ret = ErrorResponses.ErrValidationError(validatedSchema.error);
+            res.status(400).json(ret);
         }
         else {
             try {
@@ -99,8 +110,7 @@ export default class BanksController {
                 res.status(200).json(updatedItem)
             }
             catch(err:any) {
-                if(err instanceof PBNotFoundError)
-                {
+                if(err instanceof PBNotFoundError) {
                     res.status(404).json(ErrorResponses.ErrRecordNotFound(Number(id)));
                 }
                 else {
@@ -108,7 +118,6 @@ export default class BanksController {
                 }
             }
         }
-
     }
 
 
@@ -130,8 +139,7 @@ export default class BanksController {
             }
         }
         catch(err:any) {
-            if(err instanceof PBNotFoundError)
-            {
+            if(err instanceof PBNotFoundError) {
                 res.status(404).json(ErrorResponses.ErrRecordNotFound(Number(id)));
             }
             else {
@@ -139,5 +147,4 @@ export default class BanksController {
             }
         }
     }
-
 }
