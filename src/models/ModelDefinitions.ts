@@ -12,7 +12,7 @@ export const bankAccountSchema = z.object({
         .string()
         .datetime("Date must follow the 'YYYY-MM-DDTHH:MM:SS.uuuZ format'")
         .nullish()
-        .or(z.string().max(0, "What the fuck are you doing?"))
+        .or(z.string().max(0))
         .default(""),
     comments: z
         .string()

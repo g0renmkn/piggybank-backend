@@ -12,6 +12,7 @@ import {
     type BankAccountTypeExt
 } from '../models/ModelDefinitions.ts';
 import { PBDuplicateRecord, PBNotFoundError } from '../models/PiggybankModelErrors.ts';
+import ErrorResponses from './ErrorResponses.ts';
 
 
 /**
@@ -64,7 +65,10 @@ export default class BanksController {
             }
             catch(err: any) {
                 if(err instanceof PBDuplicateRecord) {
-                    res.status(403).json(err);
+                    res.status(403).json(ErrorResponses.ErrDuplicatedRecord());
+                }
+                else {
+                    res.status(500).json(ErrorResponses.ErrUnexpected());
                 }
             }
             
@@ -97,10 +101,10 @@ export default class BanksController {
             catch(err:any) {
                 if(err instanceof PBNotFoundError)
                 {
-                    res.status(404).json(err);
+                    res.status(404).json(ErrorResponses.ErrRecordNotFound(Number(id)));
                 }
                 else {
-                    res.status(400).json(err);
+                    res.status(500).json(ErrorResponses.ErrUnexpected());
                 }
             }
         }
@@ -128,10 +132,10 @@ export default class BanksController {
         catch(err:any) {
             if(err instanceof PBNotFoundError)
             {
-                res.status(404).json(err);
+                res.status(404).json(ErrorResponses.ErrRecordNotFound(Number(id)));
             }
             else {
-                res.status(400).json(err);
+                res.status(500).json(ErrorResponses.ErrUnexpected());
             }
         }
     }
