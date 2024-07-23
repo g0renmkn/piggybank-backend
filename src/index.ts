@@ -1,8 +1,14 @@
 import express, {type Express, type Request, type Response } from 'express';
-import {cfg} from './cfg.ts';
 import {Logger as logger} from './logger/logger.ts';
+import {cfg} from './cfg.ts';
 import infoRoute from './routes/info.ts';
-import staticRoutes from './routes/static.ts';
+import buildStaticTablesRoutes from './routes/staticTables.ts';
+import buildBanksRoutes from './routes/banks.ts';
+import { type PiggybankModel } from './models/ModelDefinitions.ts';
+import { PiggybankModelVar } from './models/PiggybankModelVar.ts';
+
+// Define the data model to be used
+const piggybankModel: PiggybankModel = new PiggybankModelVar();
 
 // Create Express instance
 const app: Express = express();
@@ -12,7 +18,8 @@ app.use(express.json());        // Process all the requests as json
 
 // Include routes
 app.use('', infoRoute);             // /info endpoint route
-app.use('/static', staticRoutes);   // /static routes
+app.use('/static', buildStaticTablesRoutes(piggybankModel));   // /static routes
+app.use('/banks', buildBanksRoutes(piggybankModel));      // /banks routes
 
 // Process any other endpoints that were not considered
 app.use((req: Request, res: Response) => {

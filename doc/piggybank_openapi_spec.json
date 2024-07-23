@@ -20,6 +20,14 @@
         {
             "name": "Server Info",
             "description": "Server management related endpoints."
+        },
+        {
+            "name": "Static Tables",
+            "description": "Tables that won't change at all in the current document version."
+        },
+        {
+            "name": "Banks Management",
+            "description": "Bank management related operations, like account management, movements, stocks and funds."
         }
     ],
     "paths": {
@@ -155,6 +163,222 @@
                     }
                 }
             }
+        },
+        "/banks/accounts": {
+            "get": {
+                "tags": ["Banks Management"],
+                "description": "Get the list of bank accounts.",
+                "operationId": "banks.accounts.get",
+                "responses": {
+                    "200": {
+                        "description": "Successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "allOf": [
+                                            {
+                                                "$ref": "#/components/schemas/tableID"
+                                            },
+                                            {
+                                                "$ref": "#/components/schemas/bankAccountData"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Banks Management"],
+                "description": "Add a new bank account entry.",
+                "operationId": "banks.accounts.post",
+                "requestBody": {
+                    "required": true,
+                    "description": "Object describing new account entry.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "allOf": [
+                                    {
+                                        "required": ["name", "iban"]
+                                    },
+                                    {
+                                        "$ref": "#/components/schemas/bankAccountData"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Bank account successfully created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/tableID"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/bankAccountData"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Request error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonError"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Cannot add entry.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/banks/accounts/{id}": {
+            "patch": {
+                "tags": ["Banks Management"],
+                "description": "Update an existing bank account entry.",
+                "operationId": "banks.accounts.update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "Entry ID",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "description": "Object describing the fields to be updated.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/bankAccountData"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Succesful.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/tableID"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/bankAccountData"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Request error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Entry not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Banks Management"],
+                "description": "Remove an existing bank account.",
+                "operationId": "banks.accounts.delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "Entry ID",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/tableID"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/bankAccountData"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Request error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Entry not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -196,6 +420,54 @@
                     "stock",
                     "fund"
                 ]
+            },
+            "bankAccountData": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Name to identify the account.",
+                        "example": "Made Up Bank Name"
+                    },
+                    "iban": {
+                        "type": "string",
+                        "description": "IBAN number to formally identify the account.",
+                        "example": "ES271111222233334444"
+                    },
+                    "closed": {
+                        "type": "string",
+                        "description": "Timestamp of when the account was closed. Empty if the account is still empty.",
+                        "format": "date-time"
+                    },
+                    "comments": {
+                        "type": "string",
+                        "description": "Comments related to the account.",
+                        "example": "This is just an example comment"
+                    }
+                }
+            },
+            "tableID": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "ID of the table entry."
+                    }
+                }
+            },
+            "CommonError": {
+                "type": "object",
+                "properties": {
+                    "err": {
+                        "type": "string",
+                        "description": "Error name."
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "Detailed error description."
+                    }
+                }
             }
         }
     }

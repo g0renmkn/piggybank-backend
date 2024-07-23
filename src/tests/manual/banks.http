@@ -1,0 +1,41 @@
+###
+# Add a new bank account
+POST http://localhost:4343/banks/accounts
+content-type: application/json
+
+[
+    {
+        "name": "Fake account",
+        "iban": "ES39123141243123",
+        "closed": "",
+        "comments": "Main fake account"
+    },
+    {
+        "name": "Second fake account",
+        "iban": "ES15123141243123",
+        "comments": "Secondary fake account"
+    },
+    {
+        "name": "Third fake account",
+        "iban": "ES2712341234123456785678",
+        "closed": "2024-07-22T00:39:58.891Z",
+        "comments": "This is the third account"
+    }
+]
+
+###
+# Get all bank accounts
+GET http://localhost:4343/banks/accounts
+
+###
+# Update one bank account entry
+PATCH http://localhost:4343/banks/accounts/2
+content-type: application/json
+
+{
+    "comments": "Secondary updated fake account"
+}
+
+###
+# Delete the specified entry
+DELETE http://localhost:4343/banks/accounts/1
