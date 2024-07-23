@@ -466,6 +466,9 @@
                     "message": {
                         "type": "string",
                         "description": "Detailed error description."
+                    },
+                    "details": {
+                        "description": "Optional field with additional details on the error."
                     }
                 }
             }

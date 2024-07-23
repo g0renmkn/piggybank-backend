@@ -7,7 +7,7 @@
 type ErrObject = {
     err: string;
     message: string;
-    data?: object[];
+    details?: any;
 }
 
 /**
