@@ -1,10 +1,45 @@
+/**
+ * logger.ts
+ * 
+ * Logger subsystem implementation. This module allows logging events based on the 
+ * required level of logging.
+ */
 import pc from 'picocolors';
 
+export type LoggerConfig = {
+    cli: string[];
+}
+
+/**
+ * Logger class definition
+ */
 class Logger {
+    loggerConfig: LoggerConfig;
+
     /**
      * Class constructor
      */
     constructor() {
+        // Default configuration
+        this.loggerConfig = {
+            cli: ['INF', 'WRN', 'ERR', 'DBG']
+        }
+    }
+
+
+    /**
+     * setup()
+     * 
+     * Configure the logger. If any part of the configuration is not specified,
+     * keep the default configuration.
+     * 
+     * @param logcfg Logger configuration object
+     * 
+     */
+    setup = (logcfg: LoggerConfig): void => {
+        if(logcfg.cli) {
+            this.loggerConfig.cli = logcfg.cli;
+        }
     }
 
 
@@ -17,7 +52,6 @@ class Logger {
      * @param msg Message to display
      */
     raw = (lvl: string, module: string, msg: string): void => {
-        const tags = ['INF', 'WRN', 'ERR', 'DBG'];
         const nowDate: string = new Date(Date.now()).toISOString().split('T').join(" ");
         let totalMsg: string = `${lvl} | ${nowDate} | [${module}]: ${msg}`;
 
@@ -42,7 +76,10 @@ class Logger {
             }
         }
 
-        console.log(totalMsg);
+        // Display message only if the display level is configured
+        if(this.loggerConfig.cli.includes(lvl)) {
+            console.log(totalMsg);
+        }
     }
 
     /**
