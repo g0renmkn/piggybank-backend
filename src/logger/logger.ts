@@ -16,23 +16,23 @@ class Logger {
      * @param lvl Level of the message to be displayed
      * @param msg Message to display
      */
-    raw = (lvl:number, module: string, msg: string): void => {
+    raw = (lvl: string, module: string, msg: string): void => {
         const tags = ['INF', 'WRN', 'ERR', 'DBG'];
         const nowDate: string = new Date(Date.now()).toISOString().split('T').join(" ");
-        let totalMsg: string = `${tags[lvl]} | ${nowDate} | [${module}]: ${msg}`;
+        let totalMsg: string = `${lvl} | ${nowDate} | [${module}]: ${msg}`;
 
         switch(lvl) {
-            case 1: {
+            case 'WRN': {
                 totalMsg = pc.yellow(totalMsg);
                 break;
             }
             
-            case 2: {
+            case 'ERR': {
                 totalMsg = pc.red(totalMsg);
                 break;
             }
             
-            case 3: {
+            case 'DBG': {
                 totalMsg = pc.cyan(totalMsg);
                 break;
             }
@@ -51,7 +51,7 @@ class Logger {
      * @param msg Message to be displayed
      */
     info = (module: string, msg: string): void => {
-        this.raw(0, module, msg);
+        this.raw('INF', module, msg);
     }
 
     /**
@@ -60,7 +60,7 @@ class Logger {
      * @param msg Message to be displayed
      */
     warn = (module: string, msg: string): void => {
-        this.raw(1, module, msg);
+        this.raw('WRN', module, msg);
     }
 
     /**
@@ -69,7 +69,7 @@ class Logger {
      * @param msg Message to be displayed
      */
     error = (module: string, msg: string): void => {
-        this.raw(2, module, msg);
+        this.raw('ERR', module, msg);
     }
 
     /**
@@ -78,7 +78,7 @@ class Logger {
      * @param msg Message to be displayed
      */
     debug = (module: string, msg: string): void => {
-        this.raw(3, module, msg);
+        this.raw('DBG', module, msg);
     }
 }
 
