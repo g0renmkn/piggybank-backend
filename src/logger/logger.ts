@@ -53,32 +53,34 @@ class Logger {
      */
     raw = (lvl: string, module: string, msg: string): void => {
         const nowDate: string = new Date(Date.now()).toISOString().split('T').join(" ");
-        let totalMsg: string = `${lvl} | ${nowDate} | [${module}]: ${msg}`;
+        const plainMsg: string = `${lvl} | ${nowDate} | [${module}]: ${msg}`;
+        let coloredMsg;
 
         switch(lvl) {
             case 'WRN': {
-                totalMsg = pc.yellow(totalMsg);
+                coloredMsg = pc.yellow(plainMsg);
                 break;
             }
             
             case 'ERR': {
-                totalMsg = pc.red(totalMsg);
+                coloredMsg = pc.red(plainMsg);
                 break;
             }
             
             case 'DBG': {
-                totalMsg = pc.cyan(totalMsg);
+                coloredMsg = pc.cyan(plainMsg);
                 break;
             }
 
             default: {
+                coloredMsg = plainMsg;
                 break;
             }
         }
 
         // Display message only if the display level is configured
         if(this.loggerConfig.cli.includes(lvl)) {
-            console.log(totalMsg);
+            console.log(coloredMsg);
         }
     }
 
