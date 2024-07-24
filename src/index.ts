@@ -1,5 +1,5 @@
 import express, {type Express, type Request, type Response } from 'express';
-import {Logger as logger} from './logger/logger.ts';
+import {logger} from './logger/logger.ts';
 import {cfg} from './cfg.ts';
 import infoRoute from './routes/info.ts';
 import buildStaticTablesRoutes from './routes/staticTables.ts';

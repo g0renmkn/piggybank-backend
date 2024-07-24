@@ -1,5 +1,5 @@
 import {config} from "dotenv";
-import {Logger as logger} from './logger/logger.ts';
+import {logger} from './logger/logger.ts';
 
 // Check the environment we are running (test, dev, or other)
 if (process.env.BUN_ENV=="test" || process.env.BUN_ENV=="dev") {
