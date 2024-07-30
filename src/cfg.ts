@@ -1,21 +1,17 @@
 import {config} from "dotenv";
-import {logger} from './logger/logger.ts';
 
 // Check the environment we are running (test, dev, or other)
 if (process.env.BUN_ENV=="test" || process.env.BUN_ENV=="dev") {
-    logger.info('CONFIG', `Loading '.env.${process.env.BUN_ENV}'...`);
+    console.log(`[CONFIG]: Loading '.env.${process.env.BUN_ENV}'...`);
     config({
         path: `./.env.${process.env.BUN_ENV}`, 
         override: true
     });
 }
 else {
-    logger.info('CONFIG', '[CONFIG] Loading default env file');
+    console.log('[CONFIG] Loading default env file');
     config();
 }
-
-/* Load default values in case they were not specified */
-// config();
 
 export const cfg = {
     server_port: process.env.SRV_PORT || 4343,
