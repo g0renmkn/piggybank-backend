@@ -1,4 +1,4 @@
-import express, {type Express, type Request, type Response } from 'express';
+import express, {type Express, type NextFunction, type Request, type Response } from 'express';
 import parentLogger from './logger/logger.ts';
 import {cfg} from './cfg.ts';
 import infoRoute from './routes/info.ts';
@@ -20,6 +20,20 @@ const app: Express = express();
 
 app.disable('x-powered-by');    // Disable framework broadcasting
 app.use(express.json());        // Process all the requests as json
+
+// Incoming request middleware, just to log every request (even invalid ones)
+app.use((req: Request, res: Response, next: NextFunction) => {
+    const retobj = {
+        endpoint: req.url,
+        client: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+        useragent: req.headers['user-agent'],
+        body: req.body,
+        params: req.params
+    }
+    logger.info(`REQUEST INCOMING: \n${JSON.stringify(retobj, null, 2)}`);
+
+    return next();
+});
 
 // Include routes
 app.use('', infoRoute);             // /info endpoint route
