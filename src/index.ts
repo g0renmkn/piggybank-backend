@@ -1,11 +1,16 @@
 import express, {type Express, type Request, type Response } from 'express';
-import {Logger as logger} from './logger/logger.ts';
+import parentLogger from './logger/logger.ts';
 import {cfg} from './cfg.ts';
 import infoRoute from './routes/info.ts';
 import buildStaticTablesRoutes from './routes/staticTables.ts';
 import buildBanksRoutes from './routes/banks.ts';
 import { type PiggybankModel } from './models/ModelDefinitions.ts';
 import { PiggybankModelVar } from './models/PiggybankModelVar.ts';
+
+// Get the child logger for this module
+const logger = parentLogger.child({module: "APP"})
+logger.info('Loaded config: ');
+logger.info(cfg);
 
 // Define the data model to be used
 const piggybankModel: PiggybankModel = new PiggybankModelVar();
@@ -28,6 +33,5 @@ app.use((req: Request, res: Response) => {
 
 // Start listening
 app.listen(cfg.server_port, () => {
-    //console.log(`Server is up and running on port ${cfg.server_port}`);
-    logger.info('APP', `Server is up and running on port ${cfg.server_port}`)
+    logger.info(`Server is up and running on port ${cfg.server_port}`);
 });

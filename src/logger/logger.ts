@@ -1,74 +1,43 @@
-import pc from 'picocolors';
+/**
+ * logger.ts
+ * 
+ * Logger subsystem implementation. This module allows logging events based on the 
+ * required level of logging.
+ */
+import winston from "winston";
+import 'winston-daily-rotate-file';
+import { cfg } from "../cfg";
 
-export class Logger {
-    /**
-     * Display a message based on its level
-     * 
-     * @param lvl Level of the message to be displayed
-     * @param msg Message to display
-     */
-    static raw(lvl:number, module: string, msg: string): void {
-        const tags = ['INF', 'WRN', 'ERR', 'DBG'];
-        const nowDate: string = new Date(Date.now()).toISOString().split('T').join(" ");
-        let totalMsg: string = `${tags[lvl]} | ${nowDate} | [${module}]: ${msg}`;
 
-        switch(lvl) {
-            case 1: {
-                totalMsg = pc.yellow(totalMsg);
-                break;
-            }
-            
-            case 2: {
-                totalMsg = pc.red(totalMsg);
-                break;
-            }
-            
-            case 3: {
-                totalMsg = pc.cyan(totalMsg);
-                break;
-            }
+const myFormat = winston.format.printf(({ level, message, timestamp, module }) => {
+    const tmp = (module?module:"SYS");
 
-            default: {
-                break;
-            }
-        }
+    return `${timestamp} | ${module} | ${level}: ${message}`;
+})
 
-        console.log(totalMsg);
-    }
+const parentLogger = winston.createLogger({
+    transports: [
+        new winston.transports.Console({
+            level: 'debug',
+            format: winston.format.combine(
+                winston.format.timestamp(),
+                winston.format.colorize({all: true}),
+                myFormat
+            ),
+        }),
 
-    /**
-     * Display an INFO message
-     * 
-     * @param msg Message to be displayed
-     */
-    static info(module: string, msg: string): void {
-        this.raw(0, module, msg);
-    }
+        new winston.transports.DailyRotateFile({
+            level: 'warn',
+            filename: 'piggybank-%DATE%.log',
+            datePattern: 'YYY-MM-DD-HH',
+            maxSize: '20m',
+            dirname: cfg.logdir,
+            format: winston.format.combine(
+                winston.format.timestamp(),
+                myFormat
+            ),
+        })
+    ]
+});
 
-    /**
-     * Display an INFO message
-     * 
-     * @param msg Message to be displayed
-     */
-    static warn(module: string, msg: string): void {
-        this.raw(1, module, msg);
-    }
-
-    /**
-     * Display an INFO message
-     * 
-     * @param msg Message to be displayed
-     */
-    static error(module: string, msg: string): void {
-        this.raw(2, module, msg);
-    }
-
-    /**
-     * Display an INFO message
-     * 
-     * @param msg Message to be displayed
-     */
-    static debug(module: string, msg: string): void {
-        this.raw(3, module, msg);
-    }
-}
+export default parentLogger;
