@@ -5,6 +5,8 @@
  * required level of logging.
  */
 import winston from "winston";
+import 'winston-daily-rotate-file';
+
 
 const myFormat = winston.format.printf(({ level, message, timestamp, module }) => {
     const tmp = (module?module:"SYS");
@@ -19,6 +21,18 @@ const parentLogger = winston.createLogger({
             format: winston.format.combine(
                 winston.format.timestamp(),
                 winston.format.colorize({all: true}),
+                myFormat
+            ),
+        }),
+
+        new winston.transports.DailyRotateFile({
+            level: 'warn',
+            filename: 'piggybank-%DATE%.log',
+            datePattern: 'YYY-MM-DD-HH',
+            maxSize: '20m',
+            dirname: '/tmp',
+            format: winston.format.combine(
+                winston.format.timestamp(),
                 myFormat
             ),
         })
