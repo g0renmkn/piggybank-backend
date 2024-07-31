@@ -19,7 +19,8 @@ export const cfg = {
     db_port: process.env.DB_PORT || 3306,
     db_user: process.env.DB_USER || "user",
     db_pass: process.env.DB_PASS || "pass",
-    db_name: process.env.DB_NAME || "database"
+    db_name: process.env.DB_NAME || "database",
+    logdir: process.env.LOGDIR || "/tmp"
 };
 
 

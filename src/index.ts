@@ -9,6 +9,8 @@ import { PiggybankModelVar } from './models/PiggybankModelVar.ts';
 
 // Get the child logger for this module
 const logger = parentLogger.child({module: "APP"})
+logger.info('Loaded config: ');
+logger.info(cfg);
 
 // Define the data model to be used
 const piggybankModel: PiggybankModel = new PiggybankModelVar();
@@ -31,6 +33,5 @@ app.use((req: Request, res: Response) => {
 
 // Start listening
 app.listen(cfg.server_port, () => {
-    //logger.info('APP', `Server is up and running on port ${cfg.server_port}`)
     logger.info(`Server is up and running on port ${cfg.server_port}`);
 });

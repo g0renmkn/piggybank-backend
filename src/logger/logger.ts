@@ -6,6 +6,7 @@
  */
 import winston from "winston";
 import 'winston-daily-rotate-file';
+import { cfg } from "../cfg";
 
 
 const myFormat = winston.format.printf(({ level, message, timestamp, module }) => {
@@ -30,7 +31,7 @@ const parentLogger = winston.createLogger({
             filename: 'piggybank-%DATE%.log',
             datePattern: 'YYY-MM-DD-HH',
             maxSize: '20m',
-            dirname: '/tmp',
+            dirname: cfg.logdir,
             format: winston.format.combine(
                 winston.format.timestamp(),
                 myFormat
