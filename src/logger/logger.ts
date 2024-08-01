@@ -31,7 +31,7 @@ const parentLogger = winston.createLogger({
             filename: 'piggybank-%DATE%.log',
             datePattern: 'YYY-MM-DD-HH',
             maxSize: '20m',
-            dirname: cfg.logdir,
+            dirname: cfg.logDir,
             format: winston.format.combine(
                 winston.format.timestamp(),
                 myFormat

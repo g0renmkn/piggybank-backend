@@ -64,8 +64,8 @@ export default class PiggybankApp {
      * Get the app listening for connections
      */
     listen = () => {
-        this.app.listen(cfg.server_port, () => {
-            logger.info(`Server is up and running on port ${cfg.server_port}`);
+        this.app.listen(cfg.serverPort, () => {
+            logger.info(`Server is up and running on port ${cfg.serverPort}`);
         });
     }
 
