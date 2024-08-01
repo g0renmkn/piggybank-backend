@@ -20,7 +20,8 @@ export const cfg = {
     dbUser: process.env.DB_USER || "user",
     dbPass: process.env.DB_PASS || "pass",
     dbName: process.env.DB_NAME || "database",
-    logDir: process.env.LOG_DIR || "/tmp"
+    logDir: process.env.LOG_DIR || "/tmp",
+    logSilent: (process.env.LOG_SILENT!=="1"?false:true)
 };
 
 

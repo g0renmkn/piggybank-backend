@@ -19,6 +19,7 @@ const parentLogger = winston.createLogger({
     transports: [
         new winston.transports.Console({
             level: 'debug',
+            silent: cfg.logSilent,
             format: winston.format.combine(
                 winston.format.timestamp(),
                 winston.format.colorize({all: true}),
