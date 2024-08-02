@@ -7,6 +7,7 @@
     "test": "BUN_ENV=test bun test"
   },
   "devDependencies": {
+    "@faker-js/faker": "8.4.1",
     "@types/bun": "latest",
     "@types/express": "4.17.21",
     "@types/supertest": "6.0.2",
