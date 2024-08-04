@@ -14,13 +14,14 @@ else {
 }
 
 export const cfg = {
-    server_port: process.env.SRV_PORT || 4343,
-    db_host: process.env.DB_HOST || "localhost",
-    db_port: process.env.DB_PORT || 3306,
-    db_user: process.env.DB_USER || "user",
-    db_pass: process.env.DB_PASS || "pass",
-    db_name: process.env.DB_NAME || "database",
-    logdir: process.env.LOGDIR || "/tmp"
+    serverPort: process.env.SRV_PORT || 4343,
+    dbHost: process.env.DB_HOST || "localhost",
+    dbPort: process.env.DB_PORT || 3306,
+    dbUser: process.env.DB_USER || "user",
+    dbPass: process.env.DB_PASS || "pass",
+    dbName: process.env.DB_NAME || "database",
+    logDir: process.env.LOG_DIR || "/tmp",
+    logSilent: (process.env.LOG_SILENT!=="1"?false:true)
 };
 
 

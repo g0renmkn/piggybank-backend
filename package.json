@@ -4,14 +4,17 @@
   "type": "module",
   "scripts": {
     "dev": "BUN_ENV=dev bun --watch run src/index.ts",
-    "test": "echo No testing implemented yet"
+    "test": "BUN_ENV=test bun test"
   },
   "devDependencies": {
+    "@faker-js/faker": "8.4.1",
     "@types/bun": "latest",
-    "@types/express": "^4.17.21"
+    "@types/express": "4.17.21",
+    "@types/supertest": "6.0.2",
+    "supertest": "7.0.0"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "5.0.0"
   },
   "dependencies": {
     "dotenv": "16.4.5",
