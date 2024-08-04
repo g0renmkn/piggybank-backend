@@ -335,13 +335,18 @@ describe('Bank accounts', () => {
 
         // TEST - successful deletion
         it('Should succeed when deleting an existing record', async () => {
-            expect(piggyApp.model.getBankAccounts()).toBeArrayOfSize(1);
+            // Get a copy of the bank accounts to later check
+            const arr = piggyApp.model.getBankAccounts().slice(0);
+            expect(arr).toBeArrayOfSize(1);
 
             const res = await request(piggyApp.app)
                 .delete("/banks/accounts/1")
 
             expect(res.status).toBe(200);
             expect(piggyApp.model.getBankAccounts()).toBeEmpty();
+            
+            // Check if the response is correct
+            expect(res.body).toMatchObject(arr[0]);
         });
     });
 })
