@@ -18,7 +18,7 @@ function generateValidAccount() {
 
 describe('Bank accounts', () => {
     // TEST SUITE - GET empty bank account data
-    describe('GET /banks/accounts - empty data', () => {
+    describe('GET /banks/accounts', () => {
         // TEST - get all records (empty)
         it('Should return an empty array when no records are yet added', async () => {
             const piggyApp = new PiggyApp(new PiggybankModelVar());
@@ -27,10 +27,7 @@ describe('Bank accounts', () => {
             expect(res.status).toBe(200);
             expect(res.body).toBeArrayOfSize(0);
         });
-    })
 
-    // TEST SUITE - GET non empty bank account data
-    describe('GET /banks/accounts - non empty data', () => {
         // TEST - get all records (non empty)
         it('Should return an array with the correctly added records', async () => {
             const piggyApp = new PiggyApp(new PiggybankModelVar());
@@ -50,8 +47,9 @@ describe('Bank accounts', () => {
         });
     });
 
+
     // TEST SUITE - Post record with wrong data
-    describe('POST /banks/accounts - wrong data input', () => {
+    describe('POST /banks/accounts', () => {
         let piggyApp: PiggyApp;
 
         // PREPARE TESTS
@@ -162,6 +160,23 @@ describe('Bank accounts', () => {
             expect(res.body).toHaveProperty("message");
         });
 
+        // TEST - account comments too long
+        it('Should fail due to comments too long', async () => {
+            let accountRecord = generateValidAccount();
+
+            // Modify iban to exceed constraints
+            accountRecord.comments = faker.string.sample({min: 201, max: 201});
+
+            const res = await request(piggyApp.app)
+                .post("/banks/accounts")
+                .send([accountRecord]);
+
+            expect(res.status).toBe(400);
+            expect(res.body).toBeObject();
+            expect(res.body).toHaveProperty("err");
+            expect(res.body).toHaveProperty("message");
+        });
+
         // TEST - duplicated entry
         it('Should fail due to duplicated entry', async () => {
             const accountRecord = generateValidAccount();
@@ -181,13 +196,136 @@ describe('Bank accounts', () => {
         });
 
         // TEST - successful post
-        it('Should success on correct posting', async () => {
+        it('Should succeed on correct posting', async () => {
             const accountRecord = generateValidAccount();
 
             const res = await request(piggyApp.app)
                 .post("/banks/accounts")
                 .send([accountRecord]);
 
+            expect(res.status).toBe(200);
+        });
+    });
+
+    // TEST SUITE - PATCH records
+    describe('PATCH /banks/accounts/:id', () => {
+        let piggyApp: PiggyApp;
+
+        // PREPARE TESTS
+        beforeEach(() => {
+            piggyApp = new PiggyApp(new PiggybankModelVar());
+        });
+
+        // TEST - record not found
+        it('Should fail when provided a non existing ID', async () => {
+            const modification = {
+                name: "test",
+            }
+
+            const res = await request(piggyApp.app)
+                .post("/banks/accounts/345")
+                .send(modification);
+
+            expect(res.status).toBe(404);
+        });
+
+        // TEST - name too long
+        it('Should fail when name is too long', async () => {
+            const accountRecord = generateValidAccount();
+            const modification = {
+                name: faker.string.sample({min: 31, max: 31}),
+            }
+
+            // Generate a new account record
+            piggyApp.model.createBankAccount([accountRecord]);
+
+            const res = await request(piggyApp.app)
+                .patch("/banks/accounts/1")
+                .send(modification);
+
+            expect(res.status).toBe(400);
+        });
+
+        // TEST - iban too long
+        it('Should fail when iban is too long', async () => {
+            const accountRecord = generateValidAccount();
+            const modification = {
+                iban: faker.string.sample({min: 35, max: 35}),
+            }
+
+            // Generate a new account record
+            piggyApp.model.createBankAccount([accountRecord]);
+
+            const res = await request(piggyApp.app)
+                .patch("/banks/accounts/1")
+                .send(modification);
+
+            expect(res.status).toBe(400);
+        });
+
+        // TEST - wrong date format
+        it('Should fail when date format is wrong', async () => {
+            const accountRecord = generateValidAccount();
+            const modification = {
+                closed: "wrong date",
+            }
+
+            // Generate a new account record
+            piggyApp.model.createBankAccount([accountRecord]);
+
+            const res = await request(piggyApp.app)
+                .patch("/banks/accounts/1")
+                .send(modification);
+
+            expect(res.status).toBe(400);
+        });
+
+        // TEST - wrong comments format
+        it('Should fail when comments format is wrong', async () => {
+            const accountRecord = generateValidAccount();
+            const modification = {
+                comments: 25
+            }
+
+            // Generate a new account record
+            piggyApp.model.createBankAccount([accountRecord]);
+
+            const res = await request(piggyApp.app)
+                .patch("/banks/accounts/1")
+                .send(modification);
+
+            expect(res.status).toBe(400);
+        });
+
+        // TEST - comments too long
+        it('Should fail when comments are too long', async () => {
+            const accountRecord = generateValidAccount();
+            const modification = {
+                comments: faker.string.sample({min: 201, max: 201}),
+            }
+
+            // Generate a new account record
+            piggyApp.model.createBankAccount([accountRecord]);
+
+            const res = await request(piggyApp.app)
+                .patch("/banks/accounts/1")
+                .send(modification);
+
+            expect(res.status).toBe(400);
+        });
+
+        // TEST - successful update
+        it('Should succeed when the update is valid', async () => {
+            const accountRecord = generateValidAccount();
+            const modification = generateValidAccount();
+
+            // Generate a new account record
+            piggyApp.model.createBankAccount([accountRecord]);
+
+            const res = await request(piggyApp.app)
+                .patch("/banks/accounts/1")
+                .send(modification);
+                
             expect(res.status).toBe(200);
         });
     });
