@@ -213,7 +213,12 @@ describe('Bank accounts', () => {
 
         // PREPARE TESTS
         beforeEach(() => {
+            const accountRecord = generateValidAccount();
+
             piggyApp = new PiggyApp(new PiggybankModelVar());
+
+            // Generate a new account record
+            piggyApp.model.createBankAccount([accountRecord]);
         });
 
         // TEST - record not found
@@ -231,13 +236,9 @@ describe('Bank accounts', () => {
 
         // TEST - name too long
         it('Should fail when name is too long', async () => {
-            const accountRecord = generateValidAccount();
             const modification = {
                 name: faker.string.sample({min: 31, max: 31}),
             }
-
-            // Generate a new account record
-            piggyApp.model.createBankAccount([accountRecord]);
 
             const res = await request(piggyApp.app)
                 .patch("/banks/accounts/1")
@@ -248,13 +249,9 @@ describe('Bank accounts', () => {
 
         // TEST - iban too long
         it('Should fail when iban is too long', async () => {
-            const accountRecord = generateValidAccount();
             const modification = {
                 iban: faker.string.sample({min: 35, max: 35}),
             }
-
-            // Generate a new account record
-            piggyApp.model.createBankAccount([accountRecord]);
 
             const res = await request(piggyApp.app)
                 .patch("/banks/accounts/1")
@@ -265,13 +262,9 @@ describe('Bank accounts', () => {
 
         // TEST - wrong date format
         it('Should fail when date format is wrong', async () => {
-            const accountRecord = generateValidAccount();
             const modification = {
                 closed: "wrong date",
             }
-
-            // Generate a new account record
-            piggyApp.model.createBankAccount([accountRecord]);
 
             const res = await request(piggyApp.app)
                 .patch("/banks/accounts/1")
@@ -282,13 +275,9 @@ describe('Bank accounts', () => {
 
         // TEST - wrong comments format
         it('Should fail when comments format is wrong', async () => {
-            const accountRecord = generateValidAccount();
             const modification = {
                 comments: 25
             }
-
-            // Generate a new account record
-            piggyApp.model.createBankAccount([accountRecord]);
 
             const res = await request(piggyApp.app)
                 .patch("/banks/accounts/1")
@@ -299,13 +288,9 @@ describe('Bank accounts', () => {
 
         // TEST - comments too long
         it('Should fail when comments are too long', async () => {
-            const accountRecord = generateValidAccount();
             const modification = {
                 comments: faker.string.sample({min: 201, max: 201}),
             }
-
-            // Generate a new account record
-            piggyApp.model.createBankAccount([accountRecord]);
 
             const res = await request(piggyApp.app)
                 .patch("/banks/accounts/1")
@@ -316,17 +301,23 @@ describe('Bank accounts', () => {
 
         // TEST - successful update
         it('Should succeed when the update is valid', async () => {
-            const accountRecord = generateValidAccount();
             const modification = generateValidAccount();
-
-            // Generate a new account record
-            piggyApp.model.createBankAccount([accountRecord]);
 
             const res = await request(piggyApp.app)
                 .patch("/banks/accounts/1")
                 .send(modification);
-                
+
             expect(res.status).toBe(200);
         });
     });
+
+    // TEST SUITE - DELETE records
+    // describe('DELETE /banks/accounts/:id', () => {
+    //     let piggyApp: PiggyApp;
+
+    //     // PREPARE TESTS
+    //     beforeEach(() => {
+    //         piggyApp = new PiggyApp(new PiggybankModelVar());
+    //     });
+    // });
 })
