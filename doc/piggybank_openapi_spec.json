@@ -198,36 +198,42 @@
                 "operationId": "banks.accounts.post",
                 "requestBody": {
                     "required": true,
-                    "description": "Object describing new account entry.",
+                    "description": "Array of objects describing new account entries.",
                     "content": {
                         "application/json": {
                             "schema": {
-                                "allOf": [
-                                    {
-                                        "required": ["name", "iban"]
-                                    },
-                                    {
-                                        "$ref": "#/components/schemas/bankAccountData"
-                                    }
-                                ]
+                                "type": "array",
+                                "items": {
+                                    "allOf": [
+                                        {
+                                            "required": ["name", "iban"]
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/bankAccountData"
+                                        }
+                                    ]
+                                }
                             }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "Bank account successfully created",
+                        "description": "Bank accounts successfully created",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/tableID"
-                                        },
-                                        {
-                                            "$ref": "#/components/schemas/bankAccountData"
-                                        }
-                                    ]
+                                    "type": "array",
+                                    "items": {
+                                        "allOf": [
+                                            {
+                                                "$ref": "#/components/schemas/tableID"
+                                            },
+                                            {
+                                                "$ref": "#/components/schemas/bankAccountData"
+                                            }
+                                        ]
+                                    }
                                 }
                             }
                         }
