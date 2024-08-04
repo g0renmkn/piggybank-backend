@@ -22,7 +22,9 @@ export const bankAccountSchema = z.object({
 })
 
 // Schema for an array of bank accounts
-export const bankAccountArraySchema = z.array(bankAccountSchema);
+export const bankAccountArraySchema = z
+    .array(bankAccountSchema)
+    .nonempty("Data empty");
 
 // Infer type based on Schema
 export type BankAccountType = z.infer<typeof bankAccountSchema>;
