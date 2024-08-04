@@ -312,12 +312,36 @@ describe('Bank accounts', () => {
     });
 
     // TEST SUITE - DELETE records
-    // describe('DELETE /banks/accounts/:id', () => {
-    //     let piggyApp: PiggyApp;
+    describe('DELETE /banks/accounts/:id', () => {
+        let piggyApp: PiggyApp;
 
-    //     // PREPARE TESTS
-    //     beforeEach(() => {
-    //         piggyApp = new PiggyApp(new PiggybankModelVar());
-    //     });
-    // });
+        // PREPARE TESTS
+        beforeEach(() => {
+            const accountRecord = generateValidAccount();
+
+            piggyApp = new PiggyApp(new PiggybankModelVar());
+
+            // Generate a new account record
+            piggyApp.model.createBankAccount([accountRecord]);
+        });
+
+        // TEST - wrong record ID
+        it('Should fail when provided a non existing ID', async () => {
+            const res = await request(piggyApp.app)
+                .delete("/banks/accounts/345")
+
+            expect(res.status).toBe(404);
+        });
+
+        // TEST - successful deletion
+        it('Should succeed when deleting an existing record', async () => {
+            expect(piggyApp.model.getBankAccounts()).toBeArrayOfSize(1);
+
+            const res = await request(piggyApp.app)
+                .delete("/banks/accounts/1")
+
+            expect(res.status).toBe(200);
+            expect(piggyApp.model.getBankAccounts()).toBeEmpty();
+        });
+    });
 })
