@@ -427,11 +427,15 @@
                     "name": {
                         "type": "string",
                         "description": "Name to identify the account.",
+                        "minimum": 1,
+                        "maximum": 30,
                         "example": "Made Up Bank Name"
                     },
                     "iban": {
                         "type": "string",
                         "description": "IBAN number to formally identify the account.",
+                        "minimum": 1,
+                        "maximum": 34,
                         "example": "ES271111222233334444"
                     },
                     "closed": {
@@ -442,6 +446,7 @@
                     "comments": {
                         "type": "string",
                         "description": "Comments related to the account.",
+                        "maximum": 200,
                         "example": "This is just an example comment"
                     }
                 }
