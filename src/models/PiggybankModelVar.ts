@@ -176,4 +176,11 @@ export class PiggybankModelVar implements PiggybankModel {
 
         return deletedAccount;
     }
+
+    /**
+     * Delete all existing bank accounts
+     */
+    deleteAllAccounts(): void {
+        this.bankAccounts.length = 0;
+    }
 }

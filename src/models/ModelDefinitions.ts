@@ -91,4 +91,10 @@ export interface PiggybankModel {
      * @returns Data of the deleted bank account
      */
     deleteBankAccount(id: number): BankAccountTypeExt;
+
+
+    /**
+     * Delete all existing bank accounts
+     */
+    deleteAllAccounts(): void;
 }
