@@ -4,10 +4,10 @@ import { z } from "zod";
 export const bankAccountSchema = z.object({
     name: z
         .string()
-        .max(20, "Account 'name' is too long (max=20)"),
+        .max(30, "Account 'name' is too long (max=30)"),
     iban: z
         .string()
-        .max(24, "Account 'IBAN' is too long (max=24)"),
+        .max(34, "Account 'IBAN' is too long (max=34)"),
     closed: z
         .string()
         .datetime("Date must follow the 'YYYY-MM-DDTHH:MM:SS.uuuZ format'")
@@ -16,12 +16,15 @@ export const bankAccountSchema = z.object({
         .default(""),
     comments: z
         .string()
+        .max(200, "Account 'comments' is too long (max=200)")
         .optional()
         .default("")
 })
 
 // Schema for an array of bank accounts
-export const bankAccountArraySchema = z.array(bankAccountSchema);
+export const bankAccountArraySchema = z
+    .array(bankAccountSchema)
+    .nonempty("Data empty");
 
 // Infer type based on Schema
 export type BankAccountType = z.infer<typeof bankAccountSchema>;
@@ -91,4 +94,10 @@ export interface PiggybankModel {
      * @returns Data of the deleted bank account
      */
     deleteBankAccount(id: number): BankAccountTypeExt;
+
+
+    /**
+     * Delete all existing bank accounts
+     */
+    deleteAllAccounts(): void;
 }

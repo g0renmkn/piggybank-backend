@@ -62,7 +62,17 @@ export default class BanksController {
      * @param res HTTP response object
      */
     postBankAccounts = (req: Request, res: Response): void => {
-        const validatedSchema = bankAccountArraySchema.safeParse(req.body);
+        let body;
+
+        // Check to allow single object as input (not an array)
+        if(req.body instanceof Array) {
+            body = req.body;
+        }
+        else {
+            body = [req.body];
+        }
+
+        const validatedSchema = bankAccountArraySchema.safeParse(body);
         
         if(validatedSchema.error) {
             const ret = ErrorResponses.ErrValidationError(validatedSchema.error);
