@@ -7,6 +7,7 @@
 import winston from "winston";
 import 'winston-daily-rotate-file';
 import { cfg } from "../cfg";
+import MySQLTransport from 'winston-mysql';
 
 
 const myFormat = winston.format.printf(({ level, message, timestamp, module }) => {
@@ -14,6 +15,9 @@ const myFormat = winston.format.printf(({ level, message, timestamp, module }) =
 
     return `${timestamp} | ${module} | ${level}: ${message}`;
 })
+
+const sql_options = {
+}
 
 const parentLogger = winston.createLogger({
     transports: [
@@ -37,6 +41,15 @@ const parentLogger = winston.createLogger({
                 winston.format.timestamp(),
                 myFormat
             ),
+        }),
+
+        new MySQLTransport({
+            level: 'debug',
+            host: cfg.dbHost,
+            user: cfg.dbUser,
+            password: cfg.dbPass,
+            database: "piggybank_admin",
+            table: "logger"
         })
     ]
 });
