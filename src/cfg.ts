@@ -16,7 +16,7 @@ else {
 export const cfg = {
     serverPort: process.env.SRV_PORT || 4343,
     dbHost: process.env.DB_HOST || "localhost",
-    dbPort: process.env.DB_PORT || 3306,
+    dbPort: Number(process.env.DB_PORT || 3306),
     dbUser: process.env.DB_USER || "user",
     dbPass: process.env.DB_PASS || "pass",
     dbName: process.env.DB_NAME || "database",

@@ -7,6 +7,7 @@
 import winston from "winston";
 import 'winston-daily-rotate-file';
 import { cfg } from "../cfg";
+import MySQLTransport from "./MySQLTransport.ts";
 
 
 const myFormat = winston.format.printf(({ level, message, timestamp, module }) => {
@@ -42,14 +43,16 @@ const parentLogger = winston.createLogger({
             ),
         }),
 
-        // new MySQLTransport({
-        //     level: 'debug',
-        //     host: cfg.dbHost,
-        //     user: cfg.dbUser,
-        //     password: cfg.dbPass,
-        //     database: "piggybank_admin",
-        //     table: "logger"
-        // })
+        new MySQLTransport({
+            level: 'info',
+            host: cfg.dbHost,
+            port: cfg.dbPort || 3306,
+            user: cfg.dbUser,
+            password: cfg.dbPass,
+            database: cfg.dbName,
+            table: "logger",
+            format: winston.format.timestamp()
+        })
     ]
 });
 
