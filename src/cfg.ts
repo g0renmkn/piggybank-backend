@@ -21,7 +21,9 @@ export const cfg = {
     dbPass: process.env.DB_PASS || "pass",
     dbName: process.env.DB_NAME || "database",
     logDir: process.env.LOG_DIR || "/tmp",
-    logSilent: (process.env.LOG_SILENT!=="1"?false:true)
+    logSilent: (process.env.LOG_SILENT!=="1"?false:true),
+    logToFile: (process.env.LOG_TO_FILE!=="1"?false:true),
+    logToDB: (process.env.LOG_TO_DB!=="1"?false:true)
 };
 
 

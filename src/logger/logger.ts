@@ -10,27 +10,29 @@ import { cfg } from "../cfg";
 import MySQLTransport from "./MySQLTransport.ts";
 
 
-const myFormat = winston.format.printf(({ level, message, timestamp, module }) => {
+// Custom logging format for both Console and File
+const customFormat = winston.format.printf(({ level, message, timestamp, module }) => {
     const tmp = (module?module:"SYS");
 
-    return `${timestamp} | ${module} | ${level}: ${message}`;
-})
+    return `${timestamp} | ${tmp} | ${level}: ${message}`;
+});
 
-const sql_options = {
-}
+// Build up the transports list based on cfg
+const txportList = [];
+txportList.push(
+    new winston.transports.Console({
+        level: 'debug',
+        silent: cfg.logSilent,
+        format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.colorize({all: true}),
+            customFormat
+        )
+    })
+);
 
-const parentLogger = winston.createLogger({
-    transports: [
-        new winston.transports.Console({
-            level: 'debug',
-            silent: cfg.logSilent,
-            format: winston.format.combine(
-                winston.format.timestamp(),
-                winston.format.colorize({all: true}),
-                myFormat
-            ),
-        }),
-
+if (cfg.logToFile) {
+    txportList.push(
         new winston.transports.DailyRotateFile({
             level: 'warn',
             filename: 'piggybank-%DATE%.log',
@@ -39,10 +41,14 @@ const parentLogger = winston.createLogger({
             dirname: cfg.logDir,
             format: winston.format.combine(
                 winston.format.timestamp(),
-                myFormat
-            ),
-        }),
+                customFormat
+            )
+        })
+    );
+}
 
+if (cfg.logToDB) {
+    txportList.push(
         new MySQLTransport({
             level: 'info',
             host: cfg.dbHost,
@@ -53,7 +59,16 @@ const parentLogger = winston.createLogger({
             table: "logger",
             format: winston.format.timestamp()
         })
-    ]
+    );
+}
+
+// Create the logger object to be shared
+const parentLogger = winston.createLogger({
+    transports: txportList
 });
+
+// ToDo: add table option to cfg
+
+// Specify logging level for each transport in the config
 
 export default parentLogger;
