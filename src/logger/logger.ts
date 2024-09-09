@@ -31,10 +31,10 @@ txportList.push(
     })
 );
 
-if (cfg.logToFile) {
+if (cfg.logFileLevel!=='none') {
     txportList.push(
         new winston.transports.DailyRotateFile({
-            level: 'warn',
+            level: cfg.logFileLevel,
             filename: 'piggybank-%DATE%.log',
             datePattern: 'YYY-MM-DD-HH',
             maxSize: '20m',
@@ -47,10 +47,10 @@ if (cfg.logToFile) {
     );
 }
 
-if (cfg.logToDB) {
+if (cfg.logDBLevel!=='none') {
     txportList.push(
         new MySQLTransport({
-            level: 'info',
+            level: cfg.logDBLevel,
             host: cfg.dbHost,
             port: cfg.dbPort || 3306,
             user: cfg.dbUser,
@@ -68,7 +68,5 @@ const parentLogger = winston.createLogger({
 });
 
 // ToDo: add table option to cfg
-
-// Specify logging level for each transport in the config
 
 export default parentLogger;
