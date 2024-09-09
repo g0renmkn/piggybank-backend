@@ -26,7 +26,7 @@ type MySQLOptionsType = {
  */
 class MySQLTransport extends Transport {
     name: string;
-    options: object;
+    options: MySQLOptionsType;
     pool: mysql.Pool;
 
 
@@ -149,7 +149,7 @@ class MySQLTransport extends Transport {
                     }
                 }
 
-                connection.query(`INSERT INTO logger SET ?`, log, processQuery);
+                connection.query(`INSERT INTO ${this.options.table} SET ?`, log, processQuery);
             });
         })
     }

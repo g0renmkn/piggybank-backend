@@ -56,7 +56,7 @@ if (cfg.logDBLevel!=='none') {
             user: cfg.dbUser,
             password: cfg.dbPass,
             database: cfg.dbName,
-            table: "logger",
+            table: cfg.logDBTable,
             format: winston.format.timestamp()
         })
     );
@@ -66,7 +66,5 @@ if (cfg.logDBLevel!=='none') {
 const parentLogger = winston.createLogger({
     transports: txportList
 });
-
-// ToDo: add table option to cfg
 
 export default parentLogger;
