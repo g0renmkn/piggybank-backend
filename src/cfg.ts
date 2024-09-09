@@ -13,15 +13,33 @@ else {
     config();
 }
 
-export const cfg = {
-    serverPort: process.env.SRV_PORT || 4343,
+// Default values for DBs
+// (same defaults for API and Logger DBs unless specified)
+const defDBValues = {
     dbHost: process.env.DB_HOST || "localhost",
-    dbPort: process.env.DB_PORT || 3306,
+    dbPort: Number(process.env.DB_PORT || 3306),
     dbUser: process.env.DB_USER || "user",
     dbPass: process.env.DB_PASS || "pass",
     dbName: process.env.DB_NAME || "database",
+}
+
+export const cfg = {
+    serverPort: process.env.SRV_PORT || 4343,
+    dbHost: defDBValues.dbHost,
+    dbPort: defDBValues.dbPort,
+    dbUser: defDBValues.dbUser,
+    dbPass: defDBValues.dbPass,
+    dbName: defDBValues.dbName,
     logDir: process.env.LOG_DIR || "/tmp",
-    logSilent: (process.env.LOG_SILENT!=="1"?false:true)
+    logDBHost: process.env.LOG_DB_HOST || defDBValues.dbHost,
+    logDBPort: process.env.LOG_DB_PORT || defDBValues.dbPort,
+    logDBUser: process.env.LOG_DB_USER || defDBValues.dbUser,
+    logDBPass: process.env.LOG_DB_PASS || defDBValues.dbPass,
+    logDBName: process.env.LOG_DB_NAME || defDBValues.dbName,
+    logDBTable: process.env.LOG_DB_TABLE || "logger",
+    logSilent: (process.env.LOG_SILENT!=="1"?false:true),
+    logFileLevel: process.env.LOG_FILE_LEVEL || "warn",
+    logDBLevel: process.env.LOG_DB_LEVEL || "info"
 };
 
 
