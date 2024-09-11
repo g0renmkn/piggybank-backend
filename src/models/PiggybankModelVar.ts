@@ -41,7 +41,7 @@ export class PiggybankModelVar implements PiggybankModel {
     bankAccountsCtr: number;
     bankAccounts: BankAccountTypeExt[];
 
-    constructor() {
+    constructor(modelOpts?: object) {
         this.bankAccounts = [];
         this.bankAccountsCtr = 0;
     }
