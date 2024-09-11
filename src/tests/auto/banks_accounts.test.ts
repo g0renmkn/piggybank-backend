@@ -2,16 +2,20 @@ import { describe, expect, it, beforeEach } from "bun:test";
 import request from 'supertest';
 import PiggyApp from '../../app.ts';
 import { PiggybankModelVar } from '../../models/PiggybankModelVar.ts';
+import { PiggybankModelMysql } from "../../models/PiggybankModelMysql.ts";
 import { faker } from "@faker-js/faker";
 import { generateValidBankAccount } from './utils.ts';
 
 
-describe('Bank accounts', () => {
+describe.each([
+    ['PiggybankModelVar', PiggybankModelVar, {}],
+    ['PiggybankModelMysql', PiggybankModelMysql, {}]
+])('Bank accounts [%s]', (name, modelImplementation, modelOpts) => {
     // TEST SUITE - GET empty bank account data
     describe('GET /banks/accounts', () => {
         // TEST - get all records (empty)
         it('Should return an empty array when no records are yet added', async () => {
-            const piggyApp = new PiggyApp(new PiggybankModelVar());
+            const piggyApp = new PiggyApp(new modelImplementation(modelOpts));
             piggyApp.model.deleteAllAccounts();  // Ensure there are no records
             const res = await request(piggyApp.app).get("/banks/accounts");
             expect(res.status).toBe(200);
@@ -20,7 +24,7 @@ describe('Bank accounts', () => {
 
         // TEST - get all records (non empty)
         it('Should return an array with the correctly added records', async () => {
-            const piggyApp = new PiggyApp(new PiggybankModelVar());
+            const piggyApp = new PiggyApp(new modelImplementation(modelOpts));
             const numElements = Math.floor(Math.random()*10 + 1);
             const dataArr = [];
 
@@ -44,7 +48,7 @@ describe('Bank accounts', () => {
 
         // PREPARE TESTS
         beforeEach(() => {
-            piggyApp = new PiggyApp(new PiggybankModelVar());
+            piggyApp = new PiggyApp(new modelImplementation(modelOpts));
         });
 
         // TEST - missing account name
@@ -205,7 +209,7 @@ describe('Bank accounts', () => {
         beforeEach(() => {
             const accountRecord = generateValidBankAccount();
 
-            piggyApp = new PiggyApp(new PiggybankModelVar());
+            piggyApp = new PiggyApp(new modelImplementation(modelOpts));
 
             // Generate a new account record
             piggyApp.model.createBankAccount([accountRecord]);
@@ -309,7 +313,7 @@ describe('Bank accounts', () => {
         beforeEach(() => {
             const accountRecord = generateValidBankAccount();
 
-            piggyApp = new PiggyApp(new PiggybankModelVar());
+            piggyApp = new PiggyApp(new modelImplementation(modelOpts));
 
             // Generate a new account record
             piggyApp.model.createBankAccount([accountRecord]);

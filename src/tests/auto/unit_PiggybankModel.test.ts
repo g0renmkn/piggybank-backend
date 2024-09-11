@@ -1,9 +1,13 @@
 import { describe, expect, it, beforeEach } from "bun:test";
 import { PiggybankModelVar } from '../../models/PiggybankModelVar.ts';
+import { PiggybankModelMysql } from "../../models/PiggybankModelMysql.ts";
 import { generateValidBankAccount } from "./utils.ts";
 import { PBDuplicateRecord, PBNotFoundError } from "../../models/PiggybankModelErrors.ts";
 
-describe('PiggyBankModelVar', () => {
+describe.each([  // run tests for each model implementation
+    ['PiggybankModelVar', PiggybankModelVar, {}],
+    ['PiggybankModelMysql', PiggybankModelMysql, {}]
+])('%s', (name, modelImplementation, modelOpts) => {
     // TEST SUITE - create new bank accounts
     describe('createBankAccount()', () => {
 
@@ -11,7 +15,7 @@ describe('PiggyBankModelVar', () => {
         it('Should fail when adding an already existing record', async () => {
             const wrappedFunction = () =>  {
                 const accountRecord = generateValidBankAccount();
-                const model = new PiggybankModelVar();
+                const model = new modelImplementation(modelOpts);
     
                 model.createBankAccount([accountRecord]);
                 model.createBankAccount([accountRecord]);
@@ -24,7 +28,7 @@ describe('PiggyBankModelVar', () => {
         it('Should fail when adding a duplicated record in the same attempt', async () => {
             const wrappedFunction = () =>  {
                 const accountRecord = generateValidBankAccount();
-                const model = new PiggybankModelVar();
+                const model = new modelImplementation(modelOpts);
     
                 model.createBankAccount([accountRecord, accountRecord]);
             }
@@ -34,7 +38,7 @@ describe('PiggyBankModelVar', () => {
 
         // TEST - successful creation of accounts
         it('Should successfully add the generated accounts', async () => {
-            const model = new PiggybankModelVar();
+            const model = new modelImplementation(modelOpts);
             const rndNumber = Math.floor(10*Math.random() + 1);
             const newRecords = []
 
@@ -65,7 +69,7 @@ describe('PiggyBankModelVar', () => {
     describe('getBankAccounts()', () => {
         // TEST - get all records (empty data)
         it('Should return an empty array when no records are yet added', async () => {
-            const model = new PiggybankModelVar();
+            const model = new modelImplementation(modelOpts);
             const ret = model.getBankAccounts();
 
             expect(ret).toBeArrayOfSize(0);
@@ -73,7 +77,7 @@ describe('PiggyBankModelVar', () => {
 
         // TEST - get all records (non empty)
         it('Should return an array with the correctly added records', async () => {
-            const model = new PiggybankModelVar();
+            const model = new modelImplementation(modelOpts);
             const rndNumber = Math.floor(10*Math.random() + 1);
             const records = []
 
@@ -109,7 +113,7 @@ describe('PiggyBankModelVar', () => {
         it('Should throw an error when trying to update a non existing record', async () => {
             const wrappedFunction = () =>  {
                 const accountRecord = generateValidBankAccount();
-                const model = new PiggybankModelVar();
+                const model = new modelImplementation(modelOpts);
                 const modification = {
                     name: "random name"
                 }
@@ -127,7 +131,7 @@ describe('PiggyBankModelVar', () => {
         // TEST - successful update of a bank account
         it('Should correctly update the selected record', async () => {
             const accountRecord = generateValidBankAccount();
-            const model = new PiggybankModelVar();
+            const model = new modelImplementation(modelOpts);
             const modification = {
                 name: "random name"
             };
@@ -149,7 +153,7 @@ describe('PiggyBankModelVar', () => {
         it('Should fail due to wrongly provided ID', async () => {
             const wrappedFunction = () =>  {
                 const accountRecord = generateValidBankAccount();
-                const model = new PiggybankModelVar();
+                const model = new modelImplementation(modelOpts);
     
                 // First create an account
                 model.createBankAccount([accountRecord]);
@@ -164,7 +168,7 @@ describe('PiggyBankModelVar', () => {
         // TEST - successfully delete a bank account
         it('Should succeed correctly deleting the specified account', async () => {
             const accountRecord = generateValidBankAccount();
-            const model = new PiggybankModelVar();
+            const model = new modelImplementation(modelOpts);
 
             // First create an account
             const [{id, ...tmp}] = model.createBankAccount([accountRecord]);
@@ -186,7 +190,7 @@ describe('PiggyBankModelVar', () => {
                 generateValidBankAccount(),
                 generateValidBankAccount()
             ];
-            const model = new PiggybankModelVar();
+            const model = new modelImplementation(modelOpts);
 
             model.createBankAccount(records);
             expect(model.getBankAccounts()).not.toBeEmpty();
