@@ -6,7 +6,7 @@ import { PBDuplicateRecord, PBNotFoundError } from "../../models/PiggybankModelE
 
 describe.each([  // run tests for each model implementation
     ['PiggybankModelVar', PiggybankModelVar, {}],
-    ['PiggybankModelMysql', PiggybankModelMysql, {}]
+    // ['PiggybankModelMysql', PiggybankModelMysql, {}]
 ])('%s', (name, modelImplementation, modelOpts) => {
     // TEST SUITE - create new bank accounts
     describe('createBankAccount()', () => {

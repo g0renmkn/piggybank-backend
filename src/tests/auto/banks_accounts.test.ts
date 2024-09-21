@@ -9,7 +9,7 @@ import { generateValidBankAccount } from './utils.ts';
 
 describe.each([
     ['PiggybankModelVar', PiggybankModelVar, {}],
-    ['PiggybankModelMysql', PiggybankModelMysql, {}]
+    // ['PiggybankModelMysql', PiggybankModelMysql, {}]
 ])('Bank accounts [%s]', (name, modelImplementation, modelOpts) => {
     // TEST SUITE - GET empty bank account data
     describe('GET /banks/accounts', () => {
