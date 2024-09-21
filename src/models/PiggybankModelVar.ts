@@ -52,7 +52,7 @@ export class PiggybankModelVar implements PiggybankModel {
      * 
      * @returns Array of possible values
      */
-    getMovementTypes = (): string[] => {
+    getMovementTypes = async (): Promise<string[]> => { 
         return movementTypesTable;
     }
 
@@ -62,7 +62,7 @@ export class PiggybankModelVar implements PiggybankModel {
      * 
      * @returns Array of possible values
      */
-    getBankPeriodicities = (): string[] => {
+    getBankPeriodicities =  async (): Promise<string[]> => {
         return bankPeriodicitiesTable;
     }
 
@@ -72,7 +72,7 @@ export class PiggybankModelVar implements PiggybankModel {
      * 
      * @returns Array of possible values
      */
-    getAssetTypes = (): string[] => {
+    getAssetTypes = async (): Promise<string[]> => {
         return assetTypesTable;
     }
 
@@ -82,7 +82,7 @@ export class PiggybankModelVar implements PiggybankModel {
      * 
      * @returns Array of account objects
      */
-    getBankAccounts = (): BankAccountTypeExt[] => {
+    getBankAccounts = async (): Promise<BankAccountTypeExt[]> => {
         return this.bankAccounts;
     }
 
@@ -93,7 +93,7 @@ export class PiggybankModelVar implements PiggybankModel {
      * 
      * @returns An object with the newly created account data
      */
-    createBankAccount = (acc: BankAccountType[]): BankAccountTypeExt[] => {
+    createBankAccount = async (acc: BankAccountType[]): Promise<BankAccountTypeExt[]> => {
         let retArray: BankAccountTypeExt[] = [];
         
         // Check if any of the input names already exist
@@ -136,7 +136,7 @@ export class PiggybankModelVar implements PiggybankModel {
      * 
      * @returns An updated account object
      */
-    updateBankAccount = (id: number, data: Partial<BankAccountType>): BankAccountTypeExt => {
+    updateBankAccount = async (id: number, data: Partial<BankAccountType>): Promise<BankAccountTypeExt> => {
         const idx: number = this.bankAccounts.findIndex((itm) => itm.id === id);
 
         if(idx === -1) {
@@ -161,7 +161,7 @@ export class PiggybankModelVar implements PiggybankModel {
      * 
      * @returns The deleted account object data
      */
-    deleteBankAccount = (id: number): BankAccountTypeExt => {
+    deleteBankAccount = async (id: number): Promise<BankAccountTypeExt> => {
         const idx: number = this.bankAccounts.findIndex((itm) => itm.id === id);
 
         if(idx === -1) {
@@ -180,7 +180,7 @@ export class PiggybankModelVar implements PiggybankModel {
     /**
      * Delete all existing bank accounts
      */
-    deleteAllAccounts(): void {
+    deleteAllAccounts = async (): Promise<void> => {
         this.bankAccounts.length = 0;
     }
 }

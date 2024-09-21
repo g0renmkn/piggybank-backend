@@ -13,27 +13,47 @@ describe.each([  // run tests for each model implementation
 
         // TEST - failure due to duplicated record
         it('Should fail when adding an already existing record', async () => {
-            const wrappedFunction = () =>  {
+            let errorRaised = false;
+
+            const wrappedFunction = async () =>  {
                 const accountRecord = generateValidBankAccount();
                 const model = new modelImplementation(modelOpts);
     
-                model.createBankAccount([accountRecord]);
-                model.createBankAccount([accountRecord]);
+                await model.createBankAccount([accountRecord]);
+                await model.createBankAccount([accountRecord]);
             }
 
-            expect(wrappedFunction).toThrow(PBDuplicateRecord)
+            try {
+                await wrappedFunction();
+            }
+            catch(err: any) {
+                expect(err).toBeInstanceOf(PBDuplicateRecord);
+                errorRaised = true;
+            }
+
+            expect(errorRaised).toBe(true);
         });
 
         // TEST - failure due to duplicated record in the same attempt
         it('Should fail when adding a duplicated record in the same attempt', async () => {
-            const wrappedFunction = () =>  {
+            let errorRaised = false;
+
+            const wrappedFunction = async () =>  {
                 const accountRecord = generateValidBankAccount();
                 const model = new modelImplementation(modelOpts);
     
-                model.createBankAccount([accountRecord, accountRecord]);
+                await model.createBankAccount([accountRecord, accountRecord]);
             }
 
-            expect(wrappedFunction).toThrow(PBDuplicateRecord)
+            try {
+                await wrappedFunction();
+            }
+            catch(err: any) {
+                expect(err).toBeInstanceOf(PBDuplicateRecord);
+                errorRaised = true;
+            }
+
+            expect(errorRaised).toBe(true);
         });
 
         // TEST - successful creation of accounts
@@ -46,7 +66,7 @@ describe.each([  // run tests for each model implementation
             for(let i=0; i<rndNumber; i++) {
                 newRecords.push(generateValidBankAccount());
             }
-            const createdRecords = model.createBankAccount(newRecords);
+            const createdRecords = await model.createBankAccount(newRecords);
 
             expect(createdRecords.length).toBe(rndNumber);
             // Check for each added record, that it was properly created
@@ -70,7 +90,7 @@ describe.each([  // run tests for each model implementation
         // TEST - get all records (empty data)
         it('Should return an empty array when no records are yet added', async () => {
             const model = new modelImplementation(modelOpts);
-            const ret = model.getBankAccounts();
+            const ret = await model.getBankAccounts();
 
             expect(ret).toBeArrayOfSize(0);
         });
@@ -85,10 +105,10 @@ describe.each([  // run tests for each model implementation
             for(let i=0; i<rndNumber; i++) {
                 records.push(generateValidBankAccount());
             }
-            model.createBankAccount(records);
+            await model.createBankAccount(records);
 
             // Check the generated accounts
-            const ret = model.getBankAccounts();
+            const ret = await model.getBankAccounts();
             expect(ret).toBeArrayOfSize(rndNumber);
             
             // Check each record
@@ -111,7 +131,9 @@ describe.each([  // run tests for each model implementation
     describe('updateBankAccount()', () => {
         // TEST - failure due to incorrect ID
         it('Should throw an error when trying to update a non existing record', async () => {
-            const wrappedFunction = () =>  {
+            let errorRaised = false;
+
+            const wrappedFunction = async () =>  {
                 const accountRecord = generateValidBankAccount();
                 const model = new modelImplementation(modelOpts);
                 const modification = {
@@ -119,13 +141,21 @@ describe.each([  // run tests for each model implementation
                 }
     
                 // First create an account
-                model.createBankAccount([accountRecord]);
+                await model.createBankAccount([accountRecord]);
 
                 // Then update an account with wrong ID
-                model.updateBankAccount(345, modification);
+                await model.updateBankAccount(345, modification);
             };
 
-            expect(wrappedFunction).toThrow(PBNotFoundError);
+            try {
+                await wrappedFunction();
+            }
+            catch(err: any) {
+                expect(err).toBeInstanceOf(PBNotFoundError);
+                errorRaised = true;
+            }
+
+            expect(errorRaised).toBe(true);
         });
 
         // TEST - successful update of a bank account
@@ -137,10 +167,10 @@ describe.each([  // run tests for each model implementation
             };
 
             // First create an account
-            const {id, ...tmp} = model.createBankAccount([accountRecord])[0];
+            const {id, ...tmp} = (await model.createBankAccount([accountRecord]))[0];
 
             // Then update an account with wrong ID
-            const modifiedRecord = model.updateBankAccount(id, modification);
+            const modifiedRecord = await model.updateBankAccount(id, modification);
 
             // Check against the modified object
             expect(modifiedRecord).toMatchObject({id, ...accountRecord, ...modification});
@@ -151,18 +181,28 @@ describe.each([  // run tests for each model implementation
     describe('deleteBankAccount()', () => {
         // TEST - failure due to wrong ID
         it('Should fail due to wrongly provided ID', async () => {
-            const wrappedFunction = () =>  {
+            let errorRaised = false;
+
+            const wrappedFunction = async () =>  {
                 const accountRecord = generateValidBankAccount();
                 const model = new modelImplementation(modelOpts);
     
                 // First create an account
-                model.createBankAccount([accountRecord]);
+                await model.createBankAccount([accountRecord]);
 
                 // Then delete an account with wrong ID
-                model.deleteBankAccount(345);
+                await model.deleteBankAccount(345);
             };
 
-            expect(wrappedFunction).toThrow(PBNotFoundError);
+            try {
+                await wrappedFunction();
+            }
+            catch(err: any) {
+                expect(err).toBeInstanceOf(PBNotFoundError);
+                errorRaised = true;
+            }
+
+            expect(errorRaised).toBe(true);
         })
 
         // TEST - successfully delete a bank account
@@ -171,13 +211,13 @@ describe.each([  // run tests for each model implementation
             const model = new modelImplementation(modelOpts);
 
             // First create an account
-            const [{id, ...tmp}] = model.createBankAccount([accountRecord]);
+            const [{id, ...tmp}] = await model.createBankAccount([accountRecord]);
 
             // Then delete an account with wrong ID
-            const deletedRecord = model.deleteBankAccount(id);
+            const deletedRecord = await model.deleteBankAccount(id);
 
             expect(deletedRecord).toMatchObject({id, ...accountRecord});
-            expect(model.getBankAccounts()).toBeEmpty();
+            expect(await model.getBankAccounts()).toBeEmpty();
         })
     });
 
@@ -192,11 +232,11 @@ describe.each([  // run tests for each model implementation
             ];
             const model = new modelImplementation(modelOpts);
 
-            model.createBankAccount(records);
-            expect(model.getBankAccounts()).not.toBeEmpty();
+            await model.createBankAccount(records);
+            expect(await model.getBankAccounts()).not.toBeEmpty();
 
-            model.deleteAllAccounts();
-            expect(model.getBankAccounts()).toBeEmpty();
+            await model.deleteAllAccounts();
+            expect(await model.getBankAccounts()).toBeEmpty();
         });
     });
 });

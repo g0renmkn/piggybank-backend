@@ -16,17 +16,17 @@ export default class StaticTablesController {
     }
 
     // Process the request to get the table of movement types
-    getMovTypes = (req: Request, res: Response): void => {
-        res.status(200).json(this.piggybankModel.getMovementTypes());
+    getMovTypes = async (req: Request, res: Response): Promise<void> => {
+        res.status(200).json(await this.piggybankModel.getMovementTypes());
     }
 
     // Process the request to get the table of bank periodicities
-    getBankPeriodicities = (req: Request, res: Response): void => {
-        res.status(200).json(this.piggybankModel.getBankPeriodicities());
+    getBankPeriodicities = async (req: Request, res: Response): Promise<void> => {
+        res.status(200).json(await this.piggybankModel.getBankPeriodicities());
     }
     
     // Process the request to get the table of asset types
-    getAssetTypes = (req: Request, res: Response): void => {
-        res.status(200).json(this.piggybankModel.getAssetTypes());
+    getAssetTypes = async (req: Request, res: Response): Promise<void> => {
+        res.status(200).json(await this.piggybankModel.getAssetTypes());
     }
 }

@@ -16,7 +16,7 @@ export class PiggybankModelMysql implements PiggybankModel {
      * 
      * @returns Array of possible values
      */
-    getMovementTypes = (): string[] => {
+    getMovementTypes = async (): Promise<string[]> => {
         throw Error("Not implemented");
     }
 
@@ -26,7 +26,7 @@ export class PiggybankModelMysql implements PiggybankModel {
      * 
      * @returns Array of possible values
      */
-    getBankPeriodicities = (): string[] => {
+    getBankPeriodicities = async (): Promise<string[]> => {
         throw Error("Not implemented");
     }
 
@@ -36,7 +36,7 @@ export class PiggybankModelMysql implements PiggybankModel {
      * 
      * @returns Array of possible values
      */
-    getAssetTypes = (): string[] => {
+    getAssetTypes = async (): Promise<string[]> => {
         throw Error("Not implemented");
     }
 
@@ -46,7 +46,7 @@ export class PiggybankModelMysql implements PiggybankModel {
      * 
      * @returns Array of account objects
      */
-    getBankAccounts = (): BankAccountTypeExt[] => {
+    getBankAccounts = async (): Promise<BankAccountTypeExt[]> => {
         throw Error("Not implemented");
     }
 
@@ -57,7 +57,7 @@ export class PiggybankModelMysql implements PiggybankModel {
      * 
      * @returns An object with the newly created account data
      */
-    createBankAccount = (acc: BankAccountType[]): BankAccountTypeExt[] => {
+    createBankAccount = async (acc: BankAccountType[]): Promise<BankAccountTypeExt[]> => {
         throw Error("Not implemented");
     }
 
@@ -69,7 +69,7 @@ export class PiggybankModelMysql implements PiggybankModel {
      * 
      * @returns An updated account object
      */
-    updateBankAccount = (id: number, data: Partial<BankAccountType>): BankAccountTypeExt => {
+    updateBankAccount = async (id: number, data: Partial<BankAccountType>): Promise<BankAccountTypeExt> => {
         throw Error("Not implemented");
     }
 
@@ -80,14 +80,14 @@ export class PiggybankModelMysql implements PiggybankModel {
      * 
      * @returns The deleted account object data
      */
-    deleteBankAccount = (id: number): BankAccountTypeExt => {
+    deleteBankAccount = async (id: number): Promise<BankAccountTypeExt> => {
         throw Error("Not implemented");
     }
 
     /**
      * Delete all existing bank accounts
      */
-    deleteAllAccounts(): void {
+    deleteAllAccounts = async (): Promise<void> => {
         throw Error("Not implemented");
     }
 }
