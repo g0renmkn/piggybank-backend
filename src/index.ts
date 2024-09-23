@@ -8,7 +8,13 @@ let model: PiggybankModel;
 
 // Choose data model
 if (cfg.model==='mysql') {
-    model = new PiggybankModelMysql();
+    model = new PiggybankModelMysql({
+        host: cfg.dbHost,
+        port: cfg.dbPort,
+        user: cfg.dbUser,
+        password: cfg.dbPass,
+        database: cfg.dbName
+    });
 }
 else {
     model = new PiggybankModelVar();

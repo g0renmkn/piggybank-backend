@@ -1,5 +1,12 @@
+import mysql from "mysql2/promise";
 import { type BankAccountType, type BankAccountTypeExt, type PiggybankModel } from "./ModelDefinitions";
 import { PBDuplicateRecord, PBNotFoundError } from "./PiggybankModelErrors";
+
+
+interface StaticTableResult extends mysql.RowDataPacket{
+    id: number,
+    name: string
+}
 
 
 /**
@@ -7,6 +14,7 @@ import { PBDuplicateRecord, PBNotFoundError } from "./PiggybankModelErrors";
  */
 export class PiggybankModelMysql implements PiggybankModel {
     opts: any;
+    pool: mysql.Pool;
 
     constructor(modelOpts?: any) {
         if (!modelOpts || typeof modelOpts !== 'object') {
@@ -29,6 +37,7 @@ export class PiggybankModelMysql implements PiggybankModel {
         }
 
         this.opts = modelOpts;
+        this.pool = mysql.createPool(this.opts);
     }
 
     /**
@@ -36,8 +45,8 @@ export class PiggybankModelMysql implements PiggybankModel {
      * 
      * @returns Promise that resolves when initialization is complete
      */
-    initModel(): Promise<void> {
-        throw Error("Not implemented");
+    initModel = async (): Promise<void> => {
+        // Nothing to do
     }
 
 
@@ -47,7 +56,10 @@ export class PiggybankModelMysql implements PiggybankModel {
      * @returns Array of possible values
      */
     getMovementTypes = async (): Promise<string[]> => {
-        throw Error("Not implemented");
+        const q = "SELECT * FROM data_mov_types ORDER BY id ASC";
+        const [rows] = await this.pool.query<StaticTableResult[]>(q);
+
+        return rows.map((row) => {return row.name});
     }
 
 
@@ -57,7 +69,10 @@ export class PiggybankModelMysql implements PiggybankModel {
      * @returns Array of possible values
      */
     getBankPeriodicities = async (): Promise<string[]> => {
-        throw Error("Not implemented");
+        const q = "SELECT * FROM data_bank_periodicities ORDER BY id ASC"
+        const [rows] = await this.pool.query<StaticTableResult[]>(q);
+
+        return rows.map((row) => {return row.name});
     }
 
 
@@ -67,7 +82,10 @@ export class PiggybankModelMysql implements PiggybankModel {
      * @returns Array of possible values
      */
     getAssetTypes = async (): Promise<string[]> => {
-        throw Error("Not implemented");
+        const q = "SELECT * FROM data_asset_types ORDER BY id ASC";
+        const [rows] = await this.pool.query<StaticTableResult[]>(q);
+        
+        return rows.map((row) => {return row.name});
     }
 
 
