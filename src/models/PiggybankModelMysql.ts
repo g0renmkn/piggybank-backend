@@ -6,7 +6,37 @@ import { PBDuplicateRecord, PBNotFoundError } from "./PiggybankModelErrors";
  * Piggybank Model class
  */
 export class PiggybankModelMysql implements PiggybankModel {
-    constructor(modelOpts?: object) {
+    opts: any;
+
+    constructor(modelOpts?: any) {
+        if (!modelOpts || typeof modelOpts !== 'object') {
+            throw("Model options are required");
+        }
+        if (!modelOpts.host) {
+            throw("Model options must include a host");
+        }
+        if (!modelOpts.port) {
+            throw("Model options must include a port");
+        }
+        if (!modelOpts.user) {
+            throw("Model options must include a user");
+        }
+        if (!modelOpts.password) {
+            throw("Model options must include a password");
+        }
+        if (!modelOpts.database) {
+            throw("Model options must include a database");
+        }
+
+        this.opts = modelOpts;
+    }
+
+    /**
+     * Initialize the data model
+     * 
+     * @returns Promise that resolves when initialization is complete
+     */
+    initModel(): Promise<void> {
         throw Error("Not implemented");
     }
 

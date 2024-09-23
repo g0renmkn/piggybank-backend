@@ -41,9 +41,18 @@ export class PiggybankModelVar implements PiggybankModel {
     bankAccountsCtr: number;
     bankAccounts: BankAccountTypeExt[];
 
-    constructor(modelOpts?: object) {
+    constructor(modelOpts?: any) {
         this.bankAccounts = [];
         this.bankAccountsCtr = 0;
+    }
+
+    /**
+     * Initialize the data model
+     * 
+     * @returns Promise that resolves when initialization is complete
+     */
+    initModel = async (): Promise<void> => {
+        // Nothing to do
     }
 
 

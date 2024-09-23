@@ -40,6 +40,13 @@ export type BankAccountTypeExt = {"id": number} & BankAccountType;
  */
 export interface PiggybankModel {
     /**
+     * Initialize the data model
+     * 
+     * @returns Promise that resolves when initialization is complete
+     */
+    initModel(): Promise<void>;
+
+    /**
      * Get static table of Movement Types
      * 
      * @returns Array of possible values

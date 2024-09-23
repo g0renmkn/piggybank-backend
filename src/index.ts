@@ -14,6 +14,7 @@ else {
     model = new PiggybankModelVar();
 }
 
+await model.initModel();
 const app = new PiggyApp(model);
 
 app.listen();

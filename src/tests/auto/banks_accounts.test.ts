@@ -15,7 +15,10 @@ describe.each([
     describe('GET /banks/accounts', () => {
         // TEST - get all records (empty)
         it('Should return an empty array when no records are yet added', async () => {
-            const piggyApp = new PiggyApp(new modelImplementation(modelOpts));
+            const model = new modelImplementation(modelOpts);
+            await model.initModel();
+
+            const piggyApp = new PiggyApp(model);
             await piggyApp.model.deleteAllAccounts();  // Ensure there are no records
             const res = await request(piggyApp.app).get("/banks/accounts");
             expect(res.status).toBe(200);
@@ -24,7 +27,10 @@ describe.each([
 
         // TEST - get all records (non empty)
         it('Should return an array with the correctly added records', async () => {
-            const piggyApp = new PiggyApp(new modelImplementation(modelOpts));
+            const model = new modelImplementation(modelOpts);
+            await model.initModel();
+
+            const piggyApp = new PiggyApp(model);
             const numElements = Math.floor(Math.random()*10 + 1);
             const dataArr = [];
 
@@ -47,8 +53,11 @@ describe.each([
         let piggyApp: PiggyApp;
 
         // PREPARE TESTS
-        beforeEach(() => {
-            piggyApp = new PiggyApp(new modelImplementation(modelOpts));
+        beforeEach(async () => {
+            const model = new modelImplementation(modelOpts);
+            await model.initModel();
+
+            piggyApp = new PiggyApp(model);
         });
 
         // TEST - missing account name
@@ -208,8 +217,10 @@ describe.each([
         // PREPARE TESTS
         beforeEach(async () => {
             const accountRecord = generateValidBankAccount();
-
-            piggyApp = new PiggyApp(new modelImplementation(modelOpts));
+            const model = new modelImplementation(modelOpts);
+            await model.initModel();
+            
+            piggyApp = new PiggyApp(model);
 
             // Generate a new account record
             await piggyApp.model.createBankAccount([accountRecord]);
@@ -312,8 +323,10 @@ describe.each([
         // PREPARE TESTS
         beforeEach(async () => {
             const accountRecord = generateValidBankAccount();
-
-            piggyApp = new PiggyApp(new modelImplementation(modelOpts));
+            const model = new modelImplementation(modelOpts);
+            await model.initModel();
+            
+            piggyApp = new PiggyApp(model);
 
             // Generate a new account record
             await piggyApp.model.createBankAccount([accountRecord]);

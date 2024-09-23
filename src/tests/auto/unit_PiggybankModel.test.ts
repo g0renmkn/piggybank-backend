@@ -18,6 +18,8 @@ describe.each([  // run tests for each model implementation
             const wrappedFunction = async () =>  {
                 const accountRecord = generateValidBankAccount();
                 const model = new modelImplementation(modelOpts);
+                
+                await model.initModel();
     
                 await model.createBankAccount([accountRecord]);
                 await model.createBankAccount([accountRecord]);
@@ -41,6 +43,7 @@ describe.each([  // run tests for each model implementation
             const wrappedFunction = async () =>  {
                 const accountRecord = generateValidBankAccount();
                 const model = new modelImplementation(modelOpts);
+                await model.initModel();
     
                 await model.createBankAccount([accountRecord, accountRecord]);
             }
@@ -58,9 +61,11 @@ describe.each([  // run tests for each model implementation
 
         // TEST - successful creation of accounts
         it('Should successfully add the generated accounts', async () => {
-            const model = new modelImplementation(modelOpts);
             const rndNumber = Math.floor(10*Math.random() + 1);
             const newRecords = []
+            const model = new modelImplementation(modelOpts);
+            
+            await model.initModel();
 
             // Create a bunch of bank accounts
             for(let i=0; i<rndNumber; i++) {
@@ -90,6 +95,8 @@ describe.each([  // run tests for each model implementation
         // TEST - get all records (empty data)
         it('Should return an empty array when no records are yet added', async () => {
             const model = new modelImplementation(modelOpts);
+            await model.initModel();
+            
             const ret = await model.getBankAccounts();
 
             expect(ret).toBeArrayOfSize(0);
@@ -97,9 +104,11 @@ describe.each([  // run tests for each model implementation
 
         // TEST - get all records (non empty)
         it('Should return an array with the correctly added records', async () => {
-            const model = new modelImplementation(modelOpts);
             const rndNumber = Math.floor(10*Math.random() + 1);
             const records = []
+            const model = new modelImplementation(modelOpts);
+
+            await model.initModel();
 
             // Create a bunch of bank accounts
             for(let i=0; i<rndNumber; i++) {
@@ -139,6 +148,8 @@ describe.each([  // run tests for each model implementation
                 const modification = {
                     name: "random name"
                 }
+
+                await model.initModel();
     
                 // First create an account
                 await model.createBankAccount([accountRecord]);
@@ -166,6 +177,8 @@ describe.each([  // run tests for each model implementation
                 name: "random name"
             };
 
+            await model.initModel();
+
             // First create an account
             const {id, ...tmp} = (await model.createBankAccount([accountRecord]))[0];
 
@@ -186,6 +199,8 @@ describe.each([  // run tests for each model implementation
             const wrappedFunction = async () =>  {
                 const accountRecord = generateValidBankAccount();
                 const model = new modelImplementation(modelOpts);
+
+                await model.initModel();
     
                 // First create an account
                 await model.createBankAccount([accountRecord]);
@@ -210,6 +225,8 @@ describe.each([  // run tests for each model implementation
             const accountRecord = generateValidBankAccount();
             const model = new modelImplementation(modelOpts);
 
+            await model.initModel();
+
             // First create an account
             const [{id, ...tmp}] = await model.createBankAccount([accountRecord]);
 
@@ -231,6 +248,8 @@ describe.each([  // run tests for each model implementation
                 generateValidBankAccount()
             ];
             const model = new modelImplementation(modelOpts);
+
+            await model.initModel();
 
             await model.createBankAccount(records);
             expect(await model.getBankAccounts()).not.toBeEmpty();
