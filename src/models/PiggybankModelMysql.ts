@@ -3,9 +3,18 @@ import { type BankAccountType, type BankAccountTypeExt, type PiggybankModel } fr
 import { PBDuplicateRecord, PBNotFoundError } from "./PiggybankModelErrors";
 
 
-interface StaticTableResult extends mysql.RowDataPacket{
+interface StaticTableResult extends mysql.RowDataPacket {
     id: number,
     name: string
+}
+
+interface DBBankAccountTypeExt extends mysql.RowDataPacket {
+    id: number,
+    name: string,
+    iban: string,
+    closed: string,
+    comments: string,
+    pfp: string
 }
 
 
@@ -95,7 +104,24 @@ export class PiggybankModelMysql implements PiggybankModel {
      * @returns Array of account objects
      */
     getBankAccounts = async (): Promise<BankAccountTypeExt[]> => {
-        throw Error("Not implemented");
+        let ret: BankAccountTypeExt[] = [];
+
+        const [rows] = await this.pool.query<DBBankAccountTypeExt[]>(
+            "SELECT * FROM bank_accounts ORDER BY id ASC"
+        );
+
+        ret = rows.map((row) => {
+            return {
+                id: row.id,
+                name: row.name,
+                iban: row.iban,
+                closed: row.closed,
+                comments: row.comments,
+                pfp: row.pfp
+            };
+        });
+
+        return ret;
     }
 
     /**
@@ -107,15 +133,6 @@ export class PiggybankModelMysql implements PiggybankModel {
      */
     createBankAccount = async (acc: BankAccountType[]): Promise<BankAccountTypeExt[]> => {
         let ret = [];
-
-        interface DBBankAccountTypeExt extends mysql.RowDataPacket{
-            id: number,
-            name: string,
-            iban: string,
-            closed: string,
-            comments: string,
-            pfp: string
-        }
 
         const values = acc.map((item) => {
             return [item.name, item.iban, item.closed, item.comments, item.pfp];
@@ -183,6 +200,6 @@ export class PiggybankModelMysql implements PiggybankModel {
      * Delete all existing bank accounts
      */
     deleteAllAccounts = async (): Promise<void> => {
-        throw Error("Not implemented");
+        await this.pool.query("DELETE FROM bank_accounts");
     }
 }

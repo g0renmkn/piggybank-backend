@@ -100,12 +100,13 @@ describe.each([  // run tests for each model implementation
     });
 
     // TEST SUITE - get bank accounts list
-    describe.skip('getBankAccounts()', () => {
+    describe('getBankAccounts()', () => {
         // TEST - get all records (empty data)
         it('Should return an empty array when no records are yet added', async () => {
             const model = new modelImplementation(modelOpts);
             await model.initModel();
             
+            await model.deleteAllAccounts();
             const ret = await model.getBankAccounts();
 
             expect(ret).toBeArrayOfSize(0);
@@ -248,7 +249,7 @@ describe.each([  // run tests for each model implementation
     });
 
     // TEST SUITE - delete all bank accounts
-    describe.skip('deleteAllAccounts()', () => {
+    describe('deleteAllAccounts()', () => {
         // TEST - delete all accounts
         it('Should successfully delete all accounts', async () => {
             const records = [
