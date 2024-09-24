@@ -192,4 +192,11 @@ export class PiggybankModelVar implements PiggybankModel {
     deleteAllAccounts = async (): Promise<void> => {
         this.bankAccounts.length = 0;
     }
+
+    /**
+     * Clear all data from the data model
+     */
+    clearAllData = async (): Promise<void> => {
+        await this.deleteAllAccounts();
+    }
 }

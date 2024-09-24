@@ -112,4 +112,10 @@ export interface PiggybankModel {
      * Delete all existing bank accounts
      */
     deleteAllAccounts(): Promise<void>;
+
+
+    /**
+     * Clear all data from the data model
+     */
+    clearAllData(): Promise<void>;
 }

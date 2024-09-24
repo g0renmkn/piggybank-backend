@@ -257,4 +257,13 @@ export class PiggybankModelMysql implements PiggybankModel {
     deleteAllAccounts = async (): Promise<void> => {
         await this.pool.query("DELETE FROM bank_accounts");
     }
+
+    /**
+     * Clear all data from the data model
+     */
+    clearAllData = async (): Promise<void> => {
+        await this.pool.query("SET foreign_key_checks = 0");
+        await this.pool.query(`TRUNCATE TABLE bank_accounts`);
+        await this.pool.query("SET foreign_key_checks = 1");
+    }
 }
