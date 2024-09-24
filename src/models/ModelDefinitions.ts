@@ -18,7 +18,12 @@ export const bankAccountSchema = z.object({
         .string()
         .max(200, "Account 'comments' is too long (max=200)")
         .optional()
-        .default("")
+        .default(""),
+    pfp: z
+        .string()
+        .max(20, "Account 'pfp' is too long (max=20)")
+        .optional()
+        .default(""),
 })
 
 // Schema for an array of bank accounts
