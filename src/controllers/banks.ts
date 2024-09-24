@@ -22,7 +22,9 @@ import {
 } from '../models/PiggybankModelErrors.ts';
 
 import ErrorResponses from './ErrorResponses.ts';
+import parentLogger from '../logger/logger.ts';
 
+const logger = parentLogger.child({module: "BANK CONTROLLER"});
 
 /**
  * Banks endpoints controller class
@@ -90,6 +92,7 @@ export default class BanksController {
                 }
                 else {
                     res.status(500).json(ErrorResponses.ErrUnexpected());
+                    logger.error(err);
                 }
             }
         }
@@ -125,6 +128,7 @@ export default class BanksController {
                 }
                 else {
                     res.status(500).json(ErrorResponses.ErrUnexpected());
+                    logger.error(err);
                 }
             }
         }
@@ -154,6 +158,7 @@ export default class BanksController {
             }
             else {
                 res.status(500).json(ErrorResponses.ErrUnexpected());
+                logger.error(err);
             }
         }
     }
