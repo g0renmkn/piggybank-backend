@@ -182,7 +182,45 @@ export class PiggybankModelMysql implements PiggybankModel {
      * @returns An updated account object
      */
     updateBankAccount = async (id: number, data: Partial<BankAccountType>): Promise<BankAccountTypeExt> => {
-        throw Error("Not implemented");
+        let fields = [];
+        let values = [];
+
+        if(data.name) {
+            fields.push("name = ?");
+            values.push(data.name);
+        }
+        if(data.iban) {
+            fields.push("iban = ?");
+            values.push(data.iban);
+        }
+        if(data.closed) {
+            fields.push("closed = ?");
+            values.push(data.closed);
+        }
+        if(data.comments) {
+            fields.push("comments = ?");
+            values.push(data.comments);
+        }
+        if(data.pfp) {
+            fields.push("pfp = ?");
+            values.push(data.pfp);
+        }
+
+        await this.pool.query(
+            `UPDATE bank_accounts SET ${fields.join(', ')} WHERE id = ?`,
+            values.concat([id.toString()])
+        );
+
+        const [rows] = await this.pool.query<DBBankAccountTypeExt[]>(
+            "SELECT * FROM bank_accounts WHERE id = ?",
+            [id]
+        );
+
+        if (rows.length===0) {
+            throw new PBNotFoundError();
+        }
+
+        return rows[0];
     }
 
     /**

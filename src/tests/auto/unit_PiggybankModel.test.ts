@@ -147,7 +147,7 @@ describe.each([  // run tests for each model implementation
     });
 
     // TEST SUITE - update bank account
-    describe.skip('updateBankAccount()', () => {
+    describe('updateBankAccount()', () => {
         // TEST - failure due to incorrect ID
         it('Should throw an error when trying to update a non existing record', async () => {
             let errorRaised = false;
