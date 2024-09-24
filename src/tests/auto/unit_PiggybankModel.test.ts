@@ -201,7 +201,7 @@ describe.each([  // run tests for each model implementation
     });
 
     // TEST SUITE - delete bank account
-    describe.skip('deleteBankAccount()', () => {
+    describe('deleteBankAccount()', () => {
         // TEST - failure due to wrong ID
         it('Should fail due to wrongly provided ID', async () => {
             let errorRaised = false;
@@ -236,6 +236,7 @@ describe.each([  // run tests for each model implementation
             const model = new modelImplementation(modelOpts);
 
             await model.initModel();
+            await model.deleteAllAccounts();
 
             // First create an account
             const [{id, ...tmp}] = await model.createBankAccount([accountRecord]);

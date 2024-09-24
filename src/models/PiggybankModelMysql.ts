@@ -231,7 +231,24 @@ export class PiggybankModelMysql implements PiggybankModel {
      * @returns The deleted account object data
      */
     deleteBankAccount = async (id: number): Promise<BankAccountTypeExt> => {
-        throw Error("Not implemented");
+        // First try to get the account to be deleted
+        const [rows] = await this.pool.query<DBBankAccountTypeExt[]>(
+            "SELECT * FROM bank_accounts WHERE id = ?",
+            [id]
+        );
+
+        // If not found, throw an error
+        if (rows.length===0) {
+            throw new PBNotFoundError();
+        }
+
+        // Otherwise, delete it
+        await this.pool.query(
+            "DELETE FROM bank_accounts WHERE id = ?",
+            [id]
+        );
+
+        return rows[0];
     }
 
     /**
