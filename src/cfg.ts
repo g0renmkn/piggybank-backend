@@ -39,7 +39,8 @@ export const cfg = {
     logDBTable: process.env.LOG_DB_TABLE || "logger",
     logSilent: (process.env.LOG_SILENT!=="1"?false:true),
     logFileLevel: process.env.LOG_FILE_LEVEL || "warn",
-    logDBLevel: process.env.LOG_DB_LEVEL || "info"
+    logDBLevel: process.env.LOG_DB_LEVEL || "info",
+    model: process.env.MODEL || "var"
 };
 
 

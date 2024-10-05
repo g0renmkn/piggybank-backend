@@ -18,7 +18,12 @@ export const bankAccountSchema = z.object({
         .string()
         .max(200, "Account 'comments' is too long (max=200)")
         .optional()
-        .default("")
+        .default(""),
+    pfp: z
+        .string()
+        .max(50, "Account 'pfp' is too long (max=20)")
+        .optional()
+        .default(""),
 })
 
 // Schema for an array of bank accounts
@@ -40,32 +45,39 @@ export type BankAccountTypeExt = {"id": number} & BankAccountType;
  */
 export interface PiggybankModel {
     /**
-         * Get static table of Movement Types
-         * 
-         * @returns Array of possible values
-         */
-    getMovementTypes(): string[];
+     * Initialize the data model
+     * 
+     * @returns Promise that resolves when initialization is complete
+     */
+    initModel(): Promise<void>;
+
+    /**
+     * Get static table of Movement Types
+     * 
+     * @returns Array of possible values
+     */
+    getMovementTypes(): Promise<string[]>;
 
     /**
      * Get static table of Bank Periodicities
      * 
      * @returns Array of possible values
      */
-    getBankPeriodicities(): string[];
+    getBankPeriodicities(): Promise<string[]>;
 
     /**
      * Get static table of Asset Types
      * 
      * @returns Array of possible values
      */
-    getAssetTypes(): string[];
+    getAssetTypes(): Promise<string[]>;
 
     /**
      * Get an array of available bank accounts
      * 
      * @returns Array of account objects
      */
-    getBankAccounts(): BankAccountTypeExt[];
+    getBankAccounts(): Promise<BankAccountTypeExt[]>;
 
     /**
      * Create a new account
@@ -74,7 +86,7 @@ export interface PiggybankModel {
      * 
      * @returns An object with the newly created account data
      */
-    createBankAccount(acc: BankAccountType[]): BankAccountTypeExt[];
+    createBankAccount(acc: BankAccountType[]): Promise<BankAccountTypeExt[]>;
 
     /**
      * Update an existing bank account
@@ -84,7 +96,7 @@ export interface PiggybankModel {
      * 
      * @returns An updated account object
      */
-    updateBankAccount(id: number, data: Partial<BankAccountType>): BankAccountTypeExt;
+    updateBankAccount(id: number, data: Partial<BankAccountType>): Promise<BankAccountTypeExt>;
 
     /**
      * Delete an existing bank account
@@ -93,11 +105,17 @@ export interface PiggybankModel {
      * 
      * @returns Data of the deleted bank account
      */
-    deleteBankAccount(id: number): BankAccountTypeExt;
+    deleteBankAccount(id: number): Promise<BankAccountTypeExt>;
 
 
     /**
      * Delete all existing bank accounts
      */
-    deleteAllAccounts(): void;
+    deleteAllAccounts(): Promise<void>;
+
+
+    /**
+     * Clear all data from the data model
+     */
+    clearAllData(): Promise<void>;
 }

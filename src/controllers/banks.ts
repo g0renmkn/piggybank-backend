@@ -22,7 +22,9 @@ import {
 } from '../models/PiggybankModelErrors.ts';
 
 import ErrorResponses from './ErrorResponses.ts';
+import parentLogger from '../logger/logger.ts';
 
+const logger = parentLogger.child({module: "BANK CONTROLLER"});
 
 /**
  * Banks endpoints controller class
@@ -48,8 +50,8 @@ export default class BanksController {
      * @param req HTTP request object
      * @param res HTTP response object
      */
-    getBankAccounts = (req: Request, res: Response): void => {
-        res.status(200).json(this.piggybankModel.getBankAccounts());
+    getBankAccounts = async (req: Request, res: Response): Promise<void> => {
+        res.status(200).json(await this.piggybankModel.getBankAccounts());
     }
 
 
@@ -61,7 +63,7 @@ export default class BanksController {
      * @param req HTTP request object
      * @param res HTTP response object
      */
-    postBankAccounts = (req: Request, res: Response): void => {
+    postBankAccounts = async (req: Request, res: Response): Promise<void> => {
         let body;
 
         // Check to allow single object as input (not an array)
@@ -81,7 +83,7 @@ export default class BanksController {
         else {
             try {
                 let ret: BankAccountTypeExt[];
-                ret = this.piggybankModel.createBankAccount(validatedSchema.data);
+                ret = await this.piggybankModel.createBankAccount(validatedSchema.data);
                 res.status(200).json(ret);
             }
             catch(err: any) {
@@ -90,6 +92,7 @@ export default class BanksController {
                 }
                 else {
                     res.status(500).json(ErrorResponses.ErrUnexpected());
+                    logger.error(err);
                 }
             }
         }
@@ -104,7 +107,7 @@ export default class BanksController {
      * @param req HTTP request object
      * @param res HTTP response object
      */
-    patchBankAccount = (req: Request, res: Response): void => {
+    patchBankAccount = async (req: Request, res: Response): Promise<void> => {
         // Get ID from the query params
         const {id} = req.params;
 
@@ -116,7 +119,7 @@ export default class BanksController {
         }
         else {
             try {
-                const updatedItem = this.piggybankModel.updateBankAccount(Number(id), validatedSchema.data)
+                const updatedItem = await this.piggybankModel.updateBankAccount(Number(id), validatedSchema.data)
                 res.status(200).json(updatedItem)
             }
             catch(err:any) {
@@ -125,6 +128,7 @@ export default class BanksController {
                 }
                 else {
                     res.status(500).json(ErrorResponses.ErrUnexpected());
+                    logger.error(err);
                 }
             }
         }
@@ -139,11 +143,11 @@ export default class BanksController {
      * @param req HTTP request object
      * @param res HTTP response object
      */
-    deleteBankAccount = (req: Request, res: Response): void => {
+    deleteBankAccount = async (req: Request, res: Response): Promise<void> => {
         const {id} = req.params;
 
         try {
-            const itemDeleted = this.piggybankModel.deleteBankAccount(Number(id));
+            const itemDeleted = await this.piggybankModel.deleteBankAccount(Number(id));
             if(itemDeleted) {
                 res.status(200).json(itemDeleted)
             }
@@ -154,6 +158,7 @@ export default class BanksController {
             }
             else {
                 res.status(500).json(ErrorResponses.ErrUnexpected());
+                logger.error(err);
             }
         }
     }

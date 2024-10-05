@@ -1,39 +1,74 @@
-import { describe, expect, it, beforeEach } from "bun:test";
+import { describe, expect, it, beforeEach, beforeAll } from "bun:test";
 import request from 'supertest';
 import PiggyApp from '../../app.ts';
+import { type PiggybankModel } from '../../models/ModelDefinitions.ts';
 import { PiggybankModelVar } from '../../models/PiggybankModelVar.ts';
+import { PiggybankModelMysql } from "../../models/PiggybankModelMysql.ts";
 import { faker } from "@faker-js/faker";
 import { generateValidBankAccount } from './utils.ts';
+import { cfg } from "../../cfg.ts";
+
+const mysqlConnection = {
+    host: cfg.dbHost,
+    port: cfg.dbPort,
+    user: cfg.dbUser,
+    password: cfg.dbPass,
+    database: cfg.dbName
+}
 
 
-describe('Bank accounts', () => {
+describe.each([
+    ['PiggybankModelVar', PiggybankModelVar, {}],
+    ['PiggybankModelMysql', PiggybankModelMysql, mysqlConnection]
+])('Bank accounts [%s]', (name, modelImplementation, modelOpts) => {
+    let model: PiggybankModel;
+
+    // Prepare all tests
+    beforeAll(async () => {
+        model = new modelImplementation(modelOpts);
+        await model.initModel();
+    });
+
+    // Clear all data before each test
+    beforeEach(async () => {
+        await model.clearAllData();
+    });
+
     // TEST SUITE - GET empty bank account data
     describe('GET /banks/accounts', () => {
+        let piggyApp: PiggyApp;
+
+        // Prepare each test
+        beforeEach(async () => {
+            piggyApp = new PiggyApp(model);
+        });
+
         // TEST - get all records (empty)
         it('Should return an empty array when no records are yet added', async () => {
-            const piggyApp = new PiggyApp(new PiggybankModelVar());
-            piggyApp.model.deleteAllAccounts();  // Ensure there are no records
+            await model.deleteAllAccounts();  // Ensure there are no records
             const res = await request(piggyApp.app).get("/banks/accounts");
-            expect(res.status).toBe(200);
-            expect(res.body).toBeArrayOfSize(0);
+
+            expect(res.status, "Request to /banks/accounts should return 200").toBe(200);
+            expect(res.body, "Returned bank accounts should be an empty array").toBeArrayOfSize(0);
         });
 
         // TEST - get all records (non empty)
         it('Should return an array with the correctly added records', async () => {
-            const piggyApp = new PiggyApp(new PiggybankModelVar());
             const numElements = Math.floor(Math.random()*10 + 1);
             const dataArr = [];
+
+            model.deleteAllAccounts();
 
             // Generate the accounts
             for(let i=0; i<numElements; i++) {
                 dataArr.push(generateValidBankAccount())
             }
             // Create accounts in the model
-            piggyApp.model.createBankAccount(dataArr);
+            await model.createBankAccount(dataArr);
             
             const res = await request(piggyApp.app).get("/banks/accounts");
-            expect(res.status).toBe(200);
-            expect(res.body).toBeArrayOfSize(numElements);
+            expect(res.status, "Request to /banks/accounts should return 200").toBe(200);
+            expect(res.body, "Returned bank accounts should be an array of size").toBeArrayOfSize(numElements);
         });
     });
 
@@ -43,8 +78,8 @@ describe('Bank accounts', () => {
         let piggyApp: PiggyApp;
 
         // PREPARE TESTS
-        beforeEach(() => {
-            piggyApp = new PiggyApp(new PiggybankModelVar());
+        beforeEach(async () => {
+            piggyApp = new PiggyApp(model);
         });
 
         // TEST - missing account name
@@ -172,7 +207,7 @@ describe('Bank accounts', () => {
             const accountRecord = generateValidBankAccount();
 
             // First add the record
-            piggyApp.model.createBankAccount([accountRecord]);
+            await model.createBankAccount([accountRecord]);
 
             // Next add it via POST again
             const res = await request(piggyApp.app)
@@ -200,15 +235,17 @@ describe('Bank accounts', () => {
     // TEST SUITE - PATCH records
     describe('PATCH /banks/accounts/:id', () => {
         let piggyApp: PiggyApp;
+        let accId: number = -1;
 
         // PREPARE TESTS
-        beforeEach(() => {
+        beforeEach(async () => {
             const accountRecord = generateValidBankAccount();
-
-            piggyApp = new PiggyApp(new PiggybankModelVar());
+            
+            piggyApp = new PiggyApp(model);
 
             // Generate a new account record
-            piggyApp.model.createBankAccount([accountRecord]);
+            const addedAccount = await model.createBankAccount([accountRecord]);
+            accId = addedAccount[0].id;
         });
 
         // TEST - record not found
@@ -218,7 +255,7 @@ describe('Bank accounts', () => {
             }
 
             const res = await request(piggyApp.app)
-                .post("/banks/accounts/345")
+                .post(`/banks/accounts/${accId+100}`)
                 .send(modification);
 
             expect(res.status).toBe(404);
@@ -231,7 +268,7 @@ describe('Bank accounts', () => {
             }
 
             const res = await request(piggyApp.app)
-                .patch("/banks/accounts/1")
+                .patch(`/banks/accounts/${accId}`)
                 .send(modification);
 
             expect(res.status).toBe(400);
@@ -244,7 +281,7 @@ describe('Bank accounts', () => {
             }
 
             const res = await request(piggyApp.app)
-                .patch("/banks/accounts/1")
+                .patch(`/banks/accounts/${accId}`)
                 .send(modification);
 
             expect(res.status).toBe(400);
@@ -257,7 +294,7 @@ describe('Bank accounts', () => {
             }
 
             const res = await request(piggyApp.app)
-                .patch("/banks/accounts/1")
+                .patch(`/banks/accounts/${accId}`)
                 .send(modification);
 
             expect(res.status).toBe(400);
@@ -270,7 +307,7 @@ describe('Bank accounts', () => {
             }
 
             const res = await request(piggyApp.app)
-                .patch("/banks/accounts/1")
+                .patch(`/banks/accounts/${accId}`)
                 .send(modification);
 
             expect(res.status).toBe(400);
@@ -283,7 +320,7 @@ describe('Bank accounts', () => {
             }
 
             const res = await request(piggyApp.app)
-                .patch("/banks/accounts/1")
+                .patch(`/banks/accounts/${accId}`)
                 .send(modification);
 
             expect(res.status).toBe(400);
@@ -294,7 +331,7 @@ describe('Bank accounts', () => {
             const modification = generateValidBankAccount();
 
             const res = await request(piggyApp.app)
-                .patch("/banks/accounts/1")
+                .patch(`/banks/accounts/${accId}`)
                 .send(modification);
 
             expect(res.status).toBe(200);
@@ -304,21 +341,23 @@ describe('Bank accounts', () => {
     // TEST SUITE - DELETE records
     describe('DELETE /banks/accounts/:id', () => {
         let piggyApp: PiggyApp;
+        let accId: number = -1;
 
         // PREPARE TESTS
-        beforeEach(() => {
+        beforeEach(async () => {
             const accountRecord = generateValidBankAccount();
-
-            piggyApp = new PiggyApp(new PiggybankModelVar());
+            
+            piggyApp = new PiggyApp(model);
 
             // Generate a new account record
-            piggyApp.model.createBankAccount([accountRecord]);
+            const addedAccount = await model.createBankAccount([accountRecord]);
+            accId = addedAccount[0].id;
         });
 
         // TEST - wrong record ID
         it('Should fail when provided a non existing ID', async () => {
             const res = await request(piggyApp.app)
-                .delete("/banks/accounts/345")
+                .delete(`/banks/accounts/${accId+100}`)
 
             expect(res.status).toBe(404);
         });
@@ -326,14 +365,14 @@ describe('Bank accounts', () => {
         // TEST - successful deletion
         it('Should succeed when deleting an existing record', async () => {
             // Get a copy of the bank accounts to later check
-            const arr = piggyApp.model.getBankAccounts().slice(0);
+            const arr = (await model.getBankAccounts()).slice(0);
             expect(arr).toBeArrayOfSize(1);
 
             const res = await request(piggyApp.app)
-                .delete("/banks/accounts/1")
+                .delete(`/banks/accounts/${accId}`)
 
             expect(res.status).toBe(200);
-            expect(piggyApp.model.getBankAccounts()).toBeEmpty();
+            expect(await model.getBankAccounts()).toBeEmpty();
 
             // Check if the response is correct
             expect(res.body).toMatchObject(arr[0]);
