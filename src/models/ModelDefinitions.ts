@@ -21,7 +21,7 @@ export const bankAccountSchema = z.object({
         .default(""),
     pfp: z
         .string()
-        .max(20, "Account 'pfp' is too long (max=20)")
+        .max(50, "Account 'pfp' is too long (max=20)")
         .optional()
         .default(""),
 })

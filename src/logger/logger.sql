@@ -1,5 +1,10 @@
 
+-- --------------------------------------------------------
+-- DROP tables if they exist
 --
+DROP TABLE IF EXISTS `logger`;
+
+-- --------------------------------------------------------
 -- Table structure for table `logger`
 --
 

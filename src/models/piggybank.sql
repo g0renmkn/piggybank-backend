@@ -3,29 +3,31 @@
 --
 
 -- --------------------------------------------------------
-
+-- DROP tables if they exist
 --
+DROP TABLE IF EXISTS `bank_accounts`;
+DROP TABLE IF EXISTS `data_asset_types`;
+DROP TABLE IF EXISTS `data_bank_periodicities`;
+DROP TABLE IF EXISTS `data_mov_types`;
+
+-- --------------------------------------------------------
 -- Table structure for table `bank_accounts`
 --
-
 CREATE TABLE `bank_accounts` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(30) NOT NULL,
   `iban` varchar(34) NOT NULL,
   `closed` varchar(30) DEFAULT '',
-  `comments` varchar(100) DEFAULT '',
-  `pfp` varchar(100) DEFAULT '',
+  `comments` varchar(200) DEFAULT '',
+  `pfp` varchar(50) DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `iban` (`iban`)
 );
 
 -- --------------------------------------------------------
-
---
 -- Table structure for table `data_asset_types`
 --
-
 CREATE TABLE `data_asset_types` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
@@ -33,10 +35,8 @@ CREATE TABLE `data_asset_types` (
   UNIQUE KEY `name` (`name`)
 );
 
---
 -- Dumping data for table `data_asset_types`
 --
-
 INSERT INTO `data_asset_types` (`id`, `name`) VALUES
 (1, 'fiat'),
 (2, 'crypto'),
@@ -44,8 +44,6 @@ INSERT INTO `data_asset_types` (`id`, `name`) VALUES
 (4, 'fund');
 
 -- --------------------------------------------------------
-
---
 -- Table structure for table `data_bank_periodicities`
 --
 
@@ -56,7 +54,6 @@ CREATE TABLE `data_bank_periodicities` (
   UNIQUE KEY `name` (`name`)
 );
 
---
 -- Dumping data for table `data_bank_periodicities`
 --
 
@@ -69,8 +66,6 @@ INSERT INTO `data_bank_periodicities` (`id`, `name`) VALUES
 (6, 'yearly');
 
 -- --------------------------------------------------------
-
---
 -- Table structure for table `data_mov_types`
 --
 
@@ -81,7 +76,6 @@ CREATE TABLE `data_mov_types` (
   UNIQUE KEY `name` (`name`)
 );
 
---
 -- Dumping data for table `data_mov_types`
 --
 
