@@ -106,7 +106,7 @@ describe.each([  // run tests for each model implementation
             const model = new modelImplementation(modelOpts);
             await model.initModel();
             
-            await model.deleteAllAccounts();
+            await model.deleteAllBankAccounts();
             const ret = await model.getBankAccounts();
 
             expect(ret).toBeArrayOfSize(0);
@@ -236,7 +236,7 @@ describe.each([  // run tests for each model implementation
             const model = new modelImplementation(modelOpts);
 
             await model.initModel();
-            await model.deleteAllAccounts();
+            await model.deleteAllBankAccounts();
 
             // First create an account
             const [{id, ...tmp}] = await model.createBankAccount([accountRecord]);
@@ -250,7 +250,7 @@ describe.each([  // run tests for each model implementation
     });
 
     // TEST SUITE - delete all bank accounts
-    describe('deleteAllAccounts()', () => {
+    describe('deleteAllBankAccounts()', () => {
         // TEST - delete all accounts
         it('Should successfully delete all accounts', async () => {
             const records = [
@@ -265,7 +265,7 @@ describe.each([  // run tests for each model implementation
             await model.createBankAccount(records);
             expect(await model.getBankAccounts()).not.toBeEmpty();
 
-            await model.deleteAllAccounts();
+            await model.deleteAllBankAccounts();
             expect(await model.getBankAccounts()).toBeEmpty();
         });
     });

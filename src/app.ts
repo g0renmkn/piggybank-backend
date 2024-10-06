@@ -2,7 +2,7 @@ import express, {type Express, type NextFunction, type Request, type Response } 
 import parentLogger from './logger/logger.ts';
 import {cfg} from './cfg.ts';
 import infoRoute from './routes/info.ts';
-import buildStaticTablesRoutes from './routes/staticTables.ts';
+import buildCommonRoutes from './routes/common.ts';
 import buildBanksRoutes from './routes/banks.ts';
 import { type PiggybankModel } from './models/ModelDefinitions.ts';
 
@@ -48,7 +48,7 @@ export default class PiggybankApp {
 
         // Include routes
         this.app.use('', infoRoute);             // /info endpoint route
-        this.app.use('/static', buildStaticTablesRoutes(this.model));   // /static routes
+        this.app.use('/common', buildCommonRoutes(this.model));   // /common routes
         this.app.use('/banks', buildBanksRoutes(this.model));      // /banks routes
 
         // Process any other endpoints that were not considered

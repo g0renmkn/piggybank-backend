@@ -16,6 +16,13 @@ const movementTypesTable = [
     "fut_liq_short"
 ];
 
+const assetTypesTable = [
+    "fiat",
+    "crypto",
+    "stock",
+    "fund"
+];
+
 const bankPeriodicitiesTable = [
     "one_time",
     "weekly",
@@ -24,13 +31,6 @@ const bankPeriodicitiesTable = [
     "bimonthly",
     "quarterly",
     "yearly"
-];
-
-const assetTypesTable = [
-    "fiat",
-    "crypto",
-    "stock",
-    "fund"
 ];
 
 
@@ -55,34 +55,36 @@ export class PiggybankModelVar implements PiggybankModel {
         // Nothing to do
     }
 
+    /** -------- Common Data ---------- */
 
     /**
-     * Get static table of Movement Types
+     * Get common table of Movement Types
      * 
      * @returns Array of possible values
      */
-    getMovementTypes = async (): Promise<string[]> => { 
+    getCommonMovTypes = async (): Promise<string[]> => {
         return movementTypesTable;
     }
 
 
     /**
-     * Get static table of Bank Periodicities
+     * Get common table of Asset Types
+     * 
+     * @returns Array of possible values
+     */
+    getCommonAssetTypes = async (): Promise<string[]> => {
+        return assetTypesTable;
+    }
+
+    /** -------- Banks Management ---------- */
+
+    /**
+     * Get table of Bank Periodicities
      * 
      * @returns Array of possible values
      */
     getBankPeriodicities =  async (): Promise<string[]> => {
         return bankPeriodicitiesTable;
-    }
-
-
-    /**
-     * Get static table of Asset Types
-     * 
-     * @returns Array of possible values
-     */
-    getAssetTypes = async (): Promise<string[]> => {
-        return assetTypesTable;
     }
 
 
@@ -189,7 +191,7 @@ export class PiggybankModelVar implements PiggybankModel {
     /**
      * Delete all existing bank accounts
      */
-    deleteAllAccounts = async (): Promise<void> => {
+    deleteAllBankAccounts = async (): Promise<void> => {
         this.bankAccounts.length = 0;
     }
 
@@ -197,6 +199,6 @@ export class PiggybankModelVar implements PiggybankModel {
      * Clear all data from the data model
      */
     clearAllData = async (): Promise<void> => {
-        await this.deleteAllAccounts();
+        await this.deleteAllBankAccounts();
     }
 }

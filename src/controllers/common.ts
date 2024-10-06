@@ -1,14 +1,14 @@
 /**
- * staticTables.ts
+ * common.ts
  * 
- * File that implementes the controller functions for the static tables
+ * File that implementes the controller functions for the common data
  * 
  */
 import {type Request, type Response} from 'express';
 import { type PiggybankModel } from '../models/ModelDefinitions.ts';
 
 
-export default class StaticTablesController {
+export default class CommonDataController {
     piggybankModel: PiggybankModel;
 
     constructor(pbm: PiggybankModel) {
@@ -17,16 +17,11 @@ export default class StaticTablesController {
 
     // Process the request to get the table of movement types
     getMovTypes = async (req: Request, res: Response): Promise<void> => {
-        res.status(200).json(await this.piggybankModel.getMovementTypes());
-    }
-
-    // Process the request to get the table of bank periodicities
-    getBankPeriodicities = async (req: Request, res: Response): Promise<void> => {
-        res.status(200).json(await this.piggybankModel.getBankPeriodicities());
+        res.status(200).json(await this.piggybankModel.getCommonMovTypes());
     }
     
     // Process the request to get the table of asset types
     getAssetTypes = async (req: Request, res: Response): Promise<void> => {
-        res.status(200).json(await this.piggybankModel.getAssetTypes());
+        res.status(200).json(await this.piggybankModel.getCommonAssetTypes());
     }
 }
