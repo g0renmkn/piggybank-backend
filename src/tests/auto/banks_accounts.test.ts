@@ -45,7 +45,7 @@ describe.each([
 
         // TEST - get all records (empty)
         it('Should return an empty array when no records are yet added', async () => {
-            await model.deleteAllAccounts();  // Ensure there are no records
+            await model.deleteAllBankAccounts();  // Ensure there are no records
             const res = await request(piggyApp.app).get("/banks/accounts");
 
             expect(res.status, "Request to /banks/accounts should return 200").toBe(200);
@@ -57,7 +57,7 @@ describe.each([
             const numElements = Math.floor(Math.random()*10 + 1);
             const dataArr = [];
 
-            model.deleteAllAccounts();
+            model.deleteAllBankAccounts();
 
             // Generate the accounts
             for(let i=0; i<numElements; i++) {

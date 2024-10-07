@@ -41,6 +41,18 @@ export default class BanksController {
         this.piggybankModel = pbm;
     }
 
+    /**
+     * getBankPeriodicities()
+     * 
+     * Handle the /banks/periodicities GET endpoint
+     *
+     * @param req HTTP request object
+     * @param res HTTP response object
+     */
+    getBankPeriodicities = async (req: Request, res: Response): Promise<void> => {
+        res.status(200).json(await this.piggybankModel.getBankPeriodicities());
+    }
+
 
     /**
      * getBankAccounts()

@@ -58,13 +58,14 @@ export class PiggybankModelMysql implements PiggybankModel {
         // Nothing to do
     }
 
+    /** -------- Common Data ---------- */
 
     /**
-     * Get static table of Movement Types
+     * Get common table of Movement Types
      * 
      * @returns Array of possible values
      */
-    getMovementTypes = async (): Promise<string[]> => {
+    getCommonMovTypes = async (): Promise<string[]> => {
         const q = "SELECT * FROM data_mov_types ORDER BY id ASC";
         const [rows] = await this.pool.query<StaticTableResult[]>(q);
 
@@ -73,7 +74,21 @@ export class PiggybankModelMysql implements PiggybankModel {
 
 
     /**
-     * Get static table of Bank Periodicities
+     * Get common table of Asset Types
+     * 
+     * @returns Array of possible values
+     */
+    getCommonAssetTypes = async (): Promise<string[]> => {
+        const q = "SELECT * FROM data_asset_types ORDER BY id ASC";
+        const [rows] = await this.pool.query<StaticTableResult[]>(q);
+        
+        return rows.map((row) => {return row.name});
+    }
+
+    /** -------- Banks Management ---------- */
+
+    /**
+     * Get table of Bank Periodicities
      * 
      * @returns Array of possible values
      */
@@ -81,19 +96,6 @@ export class PiggybankModelMysql implements PiggybankModel {
         const q = "SELECT * FROM data_bank_periodicities ORDER BY id ASC"
         const [rows] = await this.pool.query<StaticTableResult[]>(q);
 
-        return rows.map((row) => {return row.name});
-    }
-
-
-    /**
-     * Get static table of Asset Types
-     * 
-     * @returns Array of possible values
-     */
-    getAssetTypes = async (): Promise<string[]> => {
-        const q = "SELECT * FROM data_asset_types ORDER BY id ASC";
-        const [rows] = await this.pool.query<StaticTableResult[]>(q);
-        
         return rows.map((row) => {return row.name});
     }
 
@@ -254,7 +256,7 @@ export class PiggybankModelMysql implements PiggybankModel {
     /**
      * Delete all existing bank accounts
      */
-    deleteAllAccounts = async (): Promise<void> => {
+    deleteAllBankAccounts = async (): Promise<void> => {
         await this.pool.query("DELETE FROM bank_accounts");
     }
 

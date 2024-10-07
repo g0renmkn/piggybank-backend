@@ -51,12 +51,23 @@ export interface PiggybankModel {
      */
     initModel(): Promise<void>;
 
+    /** -------- Common Data ---------- */
+
     /**
      * Get static table of Movement Types
      * 
      * @returns Array of possible values
      */
-    getMovementTypes(): Promise<string[]>;
+    getCommonMovTypes(): Promise<string[]>;
+
+    /**
+     * Get static table of Asset Types
+     * 
+     * @returns Array of possible values
+     */
+    getCommonAssetTypes(): Promise<string[]>;
+
+    /** -------- Banks Management ---------- */
 
     /**
      * Get static table of Bank Periodicities
@@ -64,13 +75,6 @@ export interface PiggybankModel {
      * @returns Array of possible values
      */
     getBankPeriodicities(): Promise<string[]>;
-
-    /**
-     * Get static table of Asset Types
-     * 
-     * @returns Array of possible values
-     */
-    getAssetTypes(): Promise<string[]>;
 
     /**
      * Get an array of available bank accounts
@@ -111,7 +115,7 @@ export interface PiggybankModel {
     /**
      * Delete all existing bank accounts
      */
-    deleteAllAccounts(): Promise<void>;
+    deleteAllBankAccounts(): Promise<void>;
 
 
     /**
