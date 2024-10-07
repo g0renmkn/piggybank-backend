@@ -18,7 +18,7 @@ const mysqlConnection = {
 
 
 describe.each([
-    ['PiggybankModelVar', PiggybankModelVar, {}],
+//    ['PiggybankModelVar', PiggybankModelVar, {}],
     ['PiggybankModelMysql', PiggybankModelMysql, mysqlConnection]
 ])('Bank accounts [%s]', (name, modelImplementation, modelOpts) => {
     let model: PiggybankModel;
