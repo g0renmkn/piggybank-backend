@@ -1,21 +1,21 @@
 import mysql from "mysql2/promise";
-import { type BankAccountType, type BankAccountTypeExt, type PiggybankModel } from "./ModelDefinitions";
+import { 
+    type PiggybankModel,
+    type BankAccountType, 
+    type BankAccountTypeExt,
+    type BankCategoryType,
+    type BankCategoryTypeExt
+} from "./ModelDefinitions";
 import { PBDuplicateRecord, PBNotFoundError } from "./PiggybankModelErrors";
 
 
+// iterfaces to extend the RowDataPacket for DB interactions
 interface StaticTableResult extends mysql.RowDataPacket {
     id: number,
     name: string
 }
-
-interface DBBankAccountTypeExt extends mysql.RowDataPacket {
-    id: number,
-    name: string,
-    iban: string,
-    closed: string,
-    comments: string,
-    pfp: string
-}
+interface DBBankAccountTypeExt extends mysql.RowDataPacket, BankAccountTypeExt {}
+interface DBBankCategoryTypeExt extends mysql.RowDataPacket, BankCategoryTypeExt {}
 
 
 /**
@@ -258,6 +258,58 @@ export class PiggybankModelMysql implements PiggybankModel {
      */
     deleteAllBankAccounts = async (): Promise<void> => {
         await this.pool.query("DELETE FROM bank_accounts");
+    }
+
+    /**
+     * Get an array of available bank categories
+     * 
+     * @returns Array of category objects
+     */
+    getBankCategories = async (): Promise<BankCategoryTypeExt[]> => {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     * Create a new category
+     * 
+     * @param cat Category object to be created
+     * 
+     * @returns An object with the newly created category data
+     */
+    createBankCategory = async (cat: BankCategoryType[]): Promise<BankCategoryTypeExt[]> => {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     * Update an existing bank category
+     * 
+     * @param id ID of the category to be updated
+     * @param data Category data to be updated
+     * 
+     * @returns An updated category object
+     */
+    updateBankCategory = async (id: number, data: Partial<BankCategoryType>): Promise<BankCategoryTypeExt> => {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     * Delete an existing bank category
+     * 
+     * @param id ID of the category to be deleted
+     * 
+     * @returns Data of the deleted category
+     */
+    deleteBankCategory = async (id: number): Promise<BankCategoryTypeExt> => {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     * Delete all existing bank categories
+     * 
+     * @returns The deleted category objects
+     */
+    deleteAllBankCategories = async (): Promise<BankCategoryTypeExt[]> => {
+        throw new Error("Method not implemented.");
     }
 
     /**
