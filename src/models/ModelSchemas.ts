@@ -30,3 +30,25 @@ export const bankAccountSchema = z.object({
 export const bankAccountArraySchema = z
     .array(bankAccountSchema)
     .nonempty("Data empty");
+
+// Schema for bank category validation
+export const bankCategorySchema = z.object({
+    name: z
+        .string()
+        .max(30, "Category 'name' is too long (max=30)"),
+    description: z
+        .string()
+        .max(200, "Category 'description' is too long (max=200)")
+        .optional()
+        .default(""),
+    icon: z
+        .string()
+        .max(50, "Category 'icon' is too long (max=50)")
+        .optional()
+        .default(""),
+});
+
+// Schema for an array of bank categories
+export const bankCategoryArraySchema = z
+    .array(bankCategorySchema)
+    .nonempty("Data empty");
