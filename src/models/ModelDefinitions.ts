@@ -1,11 +1,15 @@
 import { z } from "zod";
 import { 
     bankAccountSchema,
-    bankAccountArraySchema
+    bankAccountArraySchema,
+    bankCategorySchema,
+    bankCategoryArraySchema
 } from "./ModelSchemas";
 import {
     type BankAccountType,
-    type BankAccountTypeExt
+    type BankAccountTypeExt,
+    type BankCategoryType,
+    type BankCategoryTypeExt
 } from "./ModelTypes";
 
 
@@ -13,6 +17,11 @@ export { bankAccountSchema };
 export { bankAccountArraySchema };
 export { type BankAccountType };
 export { type BankAccountTypeExt };
+
+export { bankCategorySchema };
+export { bankCategoryArraySchema };
+export { type BankCategoryType };
+export { type BankCategoryTypeExt };
 
 
 /**
@@ -93,6 +102,42 @@ export interface PiggybankModel {
      * Delete all existing bank accounts
      */
     deleteAllBankAccounts(): Promise<void>;
+
+
+    /**
+     * Get an array of available bank categories
+     * 
+     * @returns Array of category objects
+     */
+    getBankCategories(): Promise<BankCategoryTypeExt[]>;
+
+    /**
+     * Create a new category
+     * 
+     * @param cat Category object to be created
+     * 
+     * @returns An object with the newly created category data
+     */
+    createBankCategory(cat: BankCategoryType[]): Promise<BankCategoryTypeExt[]>;
+
+    /**
+     * Update an existing bank category
+     * 
+     * @param id ID of the category to be updated
+     * @param data Category data to be updated
+     * 
+     * @returns An updated category object
+     */
+    updateBankCategory(id: number, data: Partial<BankCategoryType>): Promise<BankCategoryTypeExt>;
+
+    /**
+     * Delete an existing bank category
+     * 
+     * @param id ID of the category to be deleted
+     * 
+     * @returns Data of the deleted category
+     */
+    deleteBankCategory(id: number): Promise<BankCategoryTypeExt>;
 
 
     /**
