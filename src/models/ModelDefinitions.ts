@@ -139,6 +139,13 @@ export interface PiggybankModel {
      */
     deleteBankCategory(id: number): Promise<BankCategoryTypeExt>;
 
+    /**
+     * Delete all existing bank categories
+     * 
+     * @returns The deleted category objects
+     */
+    deleteAllBankCategories(): Promise<BankCategoryTypeExt[]>;
+
 
     /**
      * Clear all data from the data model
