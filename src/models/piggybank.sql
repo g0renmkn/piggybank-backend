@@ -90,3 +90,16 @@ CREATE TABLE `bank_accounts` (
   UNIQUE KEY `name` (`name`),
   UNIQUE KEY `iban` (`iban`)
 );
+
+
+-- --------------------------------------------------------
+-- Table structure for table `bank_categories`
+--
+CREATE TABLE `bank_categories` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(30) NOT NULL,
+  `description` varchar(200) DEFAULT NULL,
+  `icon` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+);

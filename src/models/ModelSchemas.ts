@@ -43,7 +43,7 @@ export const bankCategorySchema = z.object({
         .default(""),
     icon: z
         .string()
-        .max(50, "Category 'icon' is too long (max=50)")
+        .max(100, "Category 'icon' is too long (max=100)")
         .optional()
         .default(""),
 });
