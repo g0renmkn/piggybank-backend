@@ -1,41 +1,18 @@
 import { z } from "zod";
+import { 
+    bankAccountSchema,
+    bankAccountArraySchema
+} from "./ModelSchemas";
+import {
+    type BankAccountType,
+    type BankAccountTypeExt
+} from "./ModelTypes";
 
-// Schema for bank account validation
-export const bankAccountSchema = z.object({
-    name: z
-        .string()
-        .max(30, "Account 'name' is too long (max=30)"),
-    iban: z
-        .string()
-        .max(34, "Account 'IBAN' is too long (max=34)"),
-    closed: z
-        .string()
-        .datetime("Date must follow the 'YYYY-MM-DDTHH:MM:SS.uuuZ format'")
-        .nullish()
-        .or(z.string().max(0))
-        .default(""),
-    comments: z
-        .string()
-        .max(200, "Account 'comments' is too long (max=200)")
-        .optional()
-        .default(""),
-    pfp: z
-        .string()
-        .max(50, "Account 'pfp' is too long (max=20)")
-        .optional()
-        .default(""),
-})
 
-// Schema for an array of bank accounts
-export const bankAccountArraySchema = z
-    .array(bankAccountSchema)
-    .nonempty("Data empty");
-
-// Infer type based on Schema
-export type BankAccountType = z.infer<typeof bankAccountSchema>;
-
-// Extended type to include "id"
-export type BankAccountTypeExt = {"id": number} & BankAccountType;
+export { bankAccountSchema };
+export { bankAccountArraySchema };
+export { type BankAccountType };
+export { type BankAccountTypeExt };
 
 
 /**
