@@ -18,6 +18,10 @@ export default function buildBanksRoutes(pbm: PiggybankModel) {
     routes.post("/accounts", banksController.postBankAccounts);
     routes.patch("/accounts/:id", banksController.patchBankAccount);
     routes.delete("/accounts/:id", banksController.deleteBankAccount);
+    routes.get("/categories", banksController.getBankCategories);
+    routes.post("/categories", banksController.postBankCategories);
+    routes.patch("/categories/:id", banksController.patchBankCategories);
+    routes.delete("/categories/:id", banksController.deleteBankCategories);
     
     return routes;
 }

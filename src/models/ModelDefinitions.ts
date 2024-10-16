@@ -1,41 +1,27 @@
 import { z } from "zod";
+import { 
+    bankAccountSchema,
+    bankAccountArraySchema,
+    bankCategorySchema,
+    bankCategoryArraySchema
+} from "./ModelSchemas";
+import {
+    type BankAccountType,
+    type BankAccountTypeExt,
+    type BankCategoryType,
+    type BankCategoryTypeExt
+} from "./ModelTypes";
 
-// Schema for bank account validation
-export const bankAccountSchema = z.object({
-    name: z
-        .string()
-        .max(30, "Account 'name' is too long (max=30)"),
-    iban: z
-        .string()
-        .max(34, "Account 'IBAN' is too long (max=34)"),
-    closed: z
-        .string()
-        .datetime("Date must follow the 'YYYY-MM-DDTHH:MM:SS.uuuZ format'")
-        .nullish()
-        .or(z.string().max(0))
-        .default(""),
-    comments: z
-        .string()
-        .max(200, "Account 'comments' is too long (max=200)")
-        .optional()
-        .default(""),
-    pfp: z
-        .string()
-        .max(50, "Account 'pfp' is too long (max=20)")
-        .optional()
-        .default(""),
-})
 
-// Schema for an array of bank accounts
-export const bankAccountArraySchema = z
-    .array(bankAccountSchema)
-    .nonempty("Data empty");
+export { bankAccountSchema };
+export { bankAccountArraySchema };
+export { type BankAccountType };
+export { type BankAccountTypeExt };
 
-// Infer type based on Schema
-export type BankAccountType = z.infer<typeof bankAccountSchema>;
-
-// Extended type to include "id"
-export type BankAccountTypeExt = {"id": number} & BankAccountType;
+export { bankCategorySchema };
+export { bankCategoryArraySchema };
+export { type BankCategoryType };
+export { type BankCategoryTypeExt };
 
 
 /**
@@ -116,6 +102,49 @@ export interface PiggybankModel {
      * Delete all existing bank accounts
      */
     deleteAllBankAccounts(): Promise<void>;
+
+
+    /**
+     * Get an array of available bank categories
+     * 
+     * @returns Array of category objects
+     */
+    getBankCategories(): Promise<BankCategoryTypeExt[]>;
+
+    /**
+     * Create a new category
+     * 
+     * @param cat Category object to be created
+     * 
+     * @returns An object with the newly created category data
+     */
+    createBankCategory(cat: BankCategoryType[]): Promise<BankCategoryTypeExt[]>;
+
+    /**
+     * Update an existing bank category
+     * 
+     * @param id ID of the category to be updated
+     * @param data Category data to be updated
+     * 
+     * @returns An updated category object
+     */
+    updateBankCategory(id: number, data: Partial<BankCategoryType>): Promise<BankCategoryTypeExt>;
+
+    /**
+     * Delete an existing bank category
+     * 
+     * @param id ID of the category to be deleted
+     * 
+     * @returns Data of the deleted category
+     */
+    deleteBankCategory(id: number): Promise<BankCategoryTypeExt>;
+
+    /**
+     * Delete all existing bank categories
+     * 
+     * @returns The deleted category objects
+     */
+    deleteAllBankCategories(): Promise<BankCategoryTypeExt[]>;
 
 
     /**

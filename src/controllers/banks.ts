@@ -13,7 +13,10 @@ import {
     type PiggybankModel, 
     bankAccountSchema,
     bankAccountArraySchema,
-    type BankAccountTypeExt
+    type BankAccountTypeExt,
+    bankCategorySchema,
+    bankCategoryArraySchema,
+    type BankCategoryTypeExt
 } from '../models/ModelDefinitions.ts';
 
 import {
@@ -160,6 +163,127 @@ export default class BanksController {
 
         try {
             const itemDeleted = await this.piggybankModel.deleteBankAccount(Number(id));
+            if(itemDeleted) {
+                res.status(200).json(itemDeleted)
+            }
+        }
+        catch(err:any) {
+            if(err instanceof PBNotFoundError) {
+                res.status(404).json(ErrorResponses.ErrRecordNotFound(Number(id)));
+            }
+            else {
+                res.status(500).json(ErrorResponses.ErrUnexpected());
+                logger.error(err);
+            }
+        }
+    }
+
+
+    /**
+     * getBankCategories()
+     * 
+     * Handle the /banks/categories GET endpoint
+     * 
+     * @param req HTTP request object
+     * @param res HTTP response object
+     */
+    getBankCategories = async (req: Request, res: Response): Promise<void> => {
+        res.status(200).json(await this.piggybankModel.getBankCategories());
+    }
+
+
+    /**
+     * postBankCategories()
+     * 
+     * Handle the /banks/categories POST endpoint
+     * 
+     * @param req HTTP request object
+     * @param res HTTP response object
+     */
+    postBankCategories = async (req: Request, res: Response): Promise<void> => {
+        let body;
+
+        // Check to allow single object as input (not an array)
+        if(req.body instanceof Array) {
+            body = req.body;
+        }
+        else {
+            body = [req.body];
+        }
+
+        const validatedSchema = bankCategoryArraySchema.safeParse(body);
+        
+        if(validatedSchema.error) {
+            const ret = ErrorResponses.ErrValidationError(validatedSchema.error);
+            res.status(400).json(ret);
+        }
+        else {
+            try {
+                let ret: BankCategoryTypeExt[];
+                ret = await this.piggybankModel.createBankCategory(validatedSchema.data);
+                res.status(200).json(ret);
+            }
+            catch(err: any) {
+                if(err instanceof PBDuplicateRecord) {
+                    res.status(403).json(ErrorResponses.ErrDuplicatedRecord());
+                }
+                else {
+                    res.status(500).json(ErrorResponses.ErrUnexpected());
+                    logger.error(err);
+                }
+            }
+        }
+    }
+    
+    /**
+     * patchBankCategories()
+     * 
+     * Handle the /banks/categories/:id PATCH endpoint
+     * 
+     * @param req HTTP request object
+     * @param res HTTP response object
+     */
+    patchBankCategories = async (req: Request, res: Response): Promise<void> => {
+        // Get ID from the query params
+        const {id} = req.params;
+
+        // Validate the input partially (just for the provided fields)
+        const validatedSchema = bankCategorySchema.partial().safeParse(req.body);
+        if(validatedSchema.error) {
+            const ret = ErrorResponses.ErrValidationError(validatedSchema.error);
+            res.status(400).json(ret);
+        }
+        else {
+            try {
+                const updatedItem = await this.piggybankModel.updateBankCategory(Number(id), validatedSchema.data)
+                res.status(200).json(updatedItem)
+            }
+            catch(err:any) {
+                if(err instanceof PBNotFoundError) {
+                    res.status(404).json(ErrorResponses.ErrRecordNotFound(Number(id)));
+                }
+                else {
+                    res.status(500).json(ErrorResponses.ErrUnexpected());
+                    logger.error(err);
+                }
+            }
+        }
+    }
+
+
+    /**
+     * deleteBankCategories()
+     * 
+     * Handle the /banks/categories/:id DELETE endpoint
+     * 
+     * @param req HTTP request object
+     * @param res HTTP response object
+     */
+    deleteBankCategories = async (req: Request, res: Response): Promise<void> => {
+        const {id} = req.params;
+
+        try {
+            const itemDeleted = await this.piggybankModel.deleteBankCategory(Number(id));
             if(itemDeleted) {
                 res.status(200).json(itemDeleted)
             }

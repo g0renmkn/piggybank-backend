@@ -1,21 +1,21 @@
 import mysql from "mysql2/promise";
-import { type BankAccountType, type BankAccountTypeExt, type PiggybankModel } from "./ModelDefinitions";
+import { 
+    type PiggybankModel,
+    type BankAccountType, 
+    type BankAccountTypeExt,
+    type BankCategoryType,
+    type BankCategoryTypeExt
+} from "./ModelDefinitions";
 import { PBDuplicateRecord, PBNotFoundError } from "./PiggybankModelErrors";
 
 
+// iterfaces to extend the RowDataPacket for DB interactions
 interface StaticTableResult extends mysql.RowDataPacket {
     id: number,
     name: string
 }
-
-interface DBBankAccountTypeExt extends mysql.RowDataPacket {
-    id: number,
-    name: string,
-    iban: string,
-    closed: string,
-    comments: string,
-    pfp: string
-}
+interface DBBankAccountTypeExt extends mysql.RowDataPacket, BankAccountTypeExt {}
+interface DBBankCategoryTypeExt extends mysql.RowDataPacket, BankCategoryTypeExt {}
 
 
 /**
@@ -261,11 +261,181 @@ export class PiggybankModelMysql implements PiggybankModel {
     }
 
     /**
+     * Get an array of available bank categories
+     * 
+     * @returns Array of category objects
+     */
+    getBankCategories = async (): Promise<BankCategoryTypeExt[]> => {
+        let ret: BankCategoryTypeExt[] = [];
+
+        const [rows] = await this.pool.query<DBBankCategoryTypeExt[]>(
+            "SELECT * FROM bank_categories ORDER BY id ASC"
+        );
+
+        ret = rows.map((row) => {
+            return {
+                id: row.id,
+                name: row.name,
+                description: row.description,
+                icon: row.icon
+            };
+        });
+
+        return ret;
+    }
+
+    /**
+     * Create a new category
+     * 
+     * @param cat Category object to be created
+     * 
+     * @returns An object with the newly created category data
+     */
+    createBankCategory = async (cat: BankCategoryType[]): Promise<BankCategoryTypeExt[]> => {
+        let ret = [];
+
+        const values = cat.map((item) => {
+            return [item.name, item.description, item.icon];
+        });
+
+        try {
+            const q = "INSERT INTO bank_categories (name, description, icon) VALUES ?";
+            const [insertResult] = await this.pool.query(q, [values]);
+            
+            const firstId = (insertResult as any).insertId;
+            const lastId = firstId + (insertResult as any).affectedRows - 1;
+
+            const [rows] = await this.pool.query<DBBankCategoryTypeExt[]>(
+                "SELECT * FROM bank_categories WHERE id BETWEEN ? AND ?",
+                [firstId, lastId]
+            );
+
+            ret = rows.map((row) => {
+                return {
+                    id: row.id,
+                    name: row.name,
+                    description: row.description,
+                    icon: row.icon
+                };
+            });
+
+        } catch (err) {
+            if((err as any).code === 'ER_DUP_ENTRY') {
+                throw new PBDuplicateRecord();
+            }
+            else {
+                throw err;
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Update an existing bank category
+     * 
+     * @param id ID of the category to be updated
+     * @param data Category data to be updated
+     * 
+     * @returns An updated category object
+     */
+    updateBankCategory = async (id: number, data: Partial<BankCategoryType>): Promise<BankCategoryTypeExt> => {
+        let fields = [];
+        let values = [];
+
+        if(data.name) {
+            fields.push("name = ?");
+            values.push(data.name);
+        }
+        if(data.description) {
+            fields.push("description = ?");
+            values.push(data.description);
+        }
+        if(data.icon) {
+            fields.push("icon = ?");
+            values.push(data.icon);
+        }
+
+        await this.pool.query(
+            `UPDATE bank_categories SET ${fields.join(', ')} WHERE id = ?`,
+            values.concat([id.toString()])
+        );
+
+        const [rows] = await this.pool.query<DBBankCategoryTypeExt[]>(
+            "SELECT * FROM bank_categories WHERE id = ?",
+            [id]
+        );
+
+        if (rows.length===0) {
+            throw new PBNotFoundError();
+        }
+
+        return rows[0];
+    }
+
+    /**
+     * Delete an existing bank category
+     * 
+     * @param id ID of the category to be deleted
+     * 
+     * @returns Data of the deleted category
+     */
+    deleteBankCategory = async (id: number): Promise<BankCategoryTypeExt> => {
+        // First try to get the category to be deleted
+        const [rows] = await this.pool.query<DBBankCategoryTypeExt[]>(
+            "SELECT * FROM bank_categories WHERE id = ?",
+            [id]
+        );
+
+        // If not found, throw an error
+        if (rows.length===0) {
+            throw new PBNotFoundError();
+        }
+
+        // Otherwise, delete it
+        await this.pool.query(
+            "DELETE FROM bank_categories WHERE id = ?",
+            [id]
+        );
+
+        return rows[0];
+    }
+
+    /**
+     * Delete all existing bank categories
+     * 
+     * @returns The deleted category objects
+     */
+    deleteAllBankCategories = async (): Promise<BankCategoryTypeExt[]> => {
+        let ret: BankCategoryTypeExt[] = [];
+
+        const [rows] = await this.pool.query<DBBankCategoryTypeExt[]>(
+            "SELECT * FROM bank_categories ORDER BY id ASC"
+        );
+
+        ret = rows.map((row) => {
+            return {
+                id: row.id,
+                name: row.name,
+                description: row.description,
+                icon: row.icon
+            };
+        });
+
+        await this.pool.query(
+            "DELETE FROM bank_categories"
+        );
+
+        return ret;
+    }
+
+    /**
      * Clear all data from the data model
      */
     clearAllData = async (): Promise<void> => {
         await this.pool.query("SET foreign_key_checks = 0");
         await this.pool.query(`TRUNCATE TABLE bank_accounts`);
+        await this.pool.query(`TRUNCATE TABLE bank_categories`);
         await this.pool.query("SET foreign_key_checks = 1");
     }
 }

@@ -385,6 +385,228 @@
                     }
                 }
             }
+        },
+        "/banks/categories": {
+            "get": {
+                "tags": ["Banks Management"],
+                "description": "Get the list of bank categories.",
+                "operationId": "banks.categories.get",
+                "responses": {
+                    "200": {
+                        "description": "Successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "allOf": [
+                                            {
+                                                "$ref": "#/components/schemas/tableID"
+                                            },
+                                            {
+                                                "$ref": "#/components/schemas/bankCategory"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Banks Management"],
+                "description": "Add a new bank category.",
+                "operationId": "banks.categories.post",
+                "requestBody": {
+                    "required": true,
+                    "description": "Array of objects describing new category entries.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "allOf": [
+                                        {
+                                            "required": ["name"]
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/bankCategory"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Bank categories successfully created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "allOf": [
+                                            {
+                                                "$ref": "#/components/schemas/tableID"
+                                            },
+                                            {
+                                                "$ref": "#/components/schemas/bankCategory"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Request error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonError"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Cannot add entry.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/banks/categories/{id}": {
+            "patch": {
+                "tags": ["Banks Management"],
+                "description": "Update an existing bank category.",
+                "operationId": "banks.categories.update",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "Entry ID",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "description": "Object describing the fields to be updated.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/bankCategory"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Succesful.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/tableID"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/bankCategory"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Request error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Entry not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Banks Management"],
+                "description": "Remove an existing bank category.",
+                "operationId": "banks.categories.delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "Entry ID",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/tableID"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/bankCategory"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Request error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonError"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Entry not found.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CommonError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -454,6 +676,30 @@
                         "description": "Comments related to the account.",
                         "maximum": 200,
                         "example": "This is just an example comment"
+                    }
+                }
+            },
+            "bankCategory": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Name of the category.",
+                        "minimum": 1,
+                        "maximum": 30,
+                        "example": "Bank"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Description of the category.",
+                        "maximum": 100,
+                        "example": "Bank accounts"
+                    },
+                    "icon": {
+                        "type": "string",
+                        "description": "Icon of the category.",
+                        "maximum": 50,
+                        "example": "bank_icon.png"
                     }
                 }
             },

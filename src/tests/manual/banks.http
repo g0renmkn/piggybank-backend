@@ -39,3 +39,44 @@ content-type: application/json
 ###
 # Delete the specified entry
 DELETE http://localhost:4343/banks/accounts/1
+
+
+###
+# Get all bank categories
+GET http://localhost:4343/banks/categories
+
+###
+# Add a new bank category
+POST http://localhost:4343/banks/categories
+content-type: application/json
+
+[
+    {
+        "name": "Category 1",
+        "description": "Category 1 description",
+        "icon": "category1_icon.png"
+    },
+    {
+        "name": "Category 2",
+        "description": "Category 2 description",
+        "icon": "category2_icon.png"
+    },
+    {
+        "name": "Category 3",
+        "description": "Category 3 description",
+        "icon": "category3_icon.png"
+    }
+]
+
+###
+# Update one bank category entry
+PATCH http://localhost:4343/banks/categories/2
+content-type: application/json
+
+{
+    "description": "Updated category 2 description"
+}
+
+###
+# Delete the specified entry
+DELETE http://localhost:4343/banks/categories/8
