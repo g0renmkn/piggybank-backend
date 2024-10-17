@@ -239,24 +239,10 @@
                         }
                     },
                     "400": {
-                        "description": "Request error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CommonError"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/400"
                     },
                     "403": {
-                        "description": "Cannot add entry.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CommonError"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/403"
                     }
                 }
             }
@@ -308,24 +294,10 @@
                         }
                     },
                     "400": {
-                        "description": "Request error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CommonError"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/400"
                     },
                     "404": {
-                        "description": "Entry not found.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CommonError"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/404"
                     }
                 }
             },
@@ -364,24 +336,10 @@
                         }
                     },
                     "400": {
-                        "description": "Request error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CommonError"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/400"
                     },
                     "404": {
-                        "description": "Entry not found.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CommonError"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/404"
                     }
                 }
             }
@@ -461,24 +419,10 @@
                         }
                     },
                     "400": {
-                        "description": "Request error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CommonError"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/400"
                     },
                     "403": {
-                        "description": "Cannot add entry.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CommonError"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/403"
                     }
                 }
             }
@@ -530,24 +474,10 @@
                         }
                     },
                     "400": {
-                        "description": "Request error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CommonError"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/400"
                     },
                     "404": {
-                        "description": "Entry not found.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CommonError"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/404"
                     }
                 }
             },
@@ -586,24 +516,10 @@
                         }
                     },
                     "400": {
-                        "description": "Request error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CommonError"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/400"
                     },
                     "404": {
-                        "description": "Entry not found.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CommonError"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/404"
                     }
                 }
             }
@@ -755,24 +671,10 @@
                         }
                     },
                     "400": {
-                        "description": "Request error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CommonError"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/400"
                     },
                     "403": {
-                        "description": "Cannot add entry.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CommonError"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/403"
                     }
                 }
             }
@@ -824,24 +726,10 @@
                         }
                     },
                     "400": {
-                        "description": "Request error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CommonError"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/400"
                     },
                     "404": {
-                        "description": "Entry not found.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CommonError"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/404"
                     }
                 }
             },
@@ -880,30 +768,48 @@
                         }
                     },
                     "400": {
-                        "description": "Request error.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CommonError"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/400"
                     },
                     "404": {
-                        "description": "Entry not found.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CommonError"
-                                }
-                            }
-                        }
+                        "$ref": "#/components/responses/404"
                     }
                 }
             }
         }
     },
     "components": {
+        "responses": {
+            "400": {
+                "description": "Request error.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/CommonError"
+                        }
+                    }
+                }
+            },
+            "403": {
+                "description": "Forbidden.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/CommonError"
+                        }
+                    }
+                }
+            },
+            "404": {
+                "description": "Not found.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/CommonError"
+                        }
+                    }
+                }
+            }
+        },
         "schemas": {
             "commonMovTypes": {
                 "type": "string",
