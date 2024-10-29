@@ -6,22 +6,22 @@ import {
     bankCategoryArraySchema
 } from "./ModelSchemas";
 import {
-    type BankAccountType,
-    type BankAccountTypeExt,
-    type BankCategoryType,
-    type BankCategoryTypeExt
+    type BankAccountTypeIn,
+    type BankAccountTypeOut,
+    type BankCategoryTypeIn,
+    type BankCategoryTypeOut
 } from "./ModelTypes";
 
 
 export { bankAccountSchema };
 export { bankAccountArraySchema };
-export { type BankAccountType };
-export { type BankAccountTypeExt };
+export { type BankAccountTypeIn };
+export { type BankAccountTypeOut };
 
 export { bankCategorySchema };
 export { bankCategoryArraySchema };
-export { type BankCategoryType };
-export { type BankCategoryTypeExt };
+export { type BankCategoryTypeIn };
+export { type BankCategoryTypeOut };
 
 
 /**
@@ -67,7 +67,7 @@ export interface PiggybankModel {
      * 
      * @returns Array of account objects
      */
-    getBankAccounts(): Promise<BankAccountTypeExt[]>;
+    getBankAccounts(): Promise<BankAccountTypeOut[]>;
 
     /**
      * Create a new account
@@ -76,7 +76,7 @@ export interface PiggybankModel {
      * 
      * @returns An object with the newly created account data
      */
-    createBankAccount(acc: BankAccountType[]): Promise<BankAccountTypeExt[]>;
+    createBankAccount(acc: BankAccountTypeIn[]): Promise<BankAccountTypeOut[]>;
 
     /**
      * Update an existing bank account
@@ -86,7 +86,7 @@ export interface PiggybankModel {
      * 
      * @returns An updated account object
      */
-    updateBankAccount(id: number, data: Partial<BankAccountType>): Promise<BankAccountTypeExt>;
+    updateBankAccount(id: number, data: Partial<BankAccountTypeIn>): Promise<BankAccountTypeOut>;
 
     /**
      * Delete an existing bank account
@@ -95,7 +95,7 @@ export interface PiggybankModel {
      * 
      * @returns Data of the deleted bank account
      */
-    deleteBankAccount(id: number): Promise<BankAccountTypeExt>;
+    deleteBankAccount(id: number): Promise<BankAccountTypeOut>;
 
 
     /**
@@ -109,7 +109,7 @@ export interface PiggybankModel {
      * 
      * @returns Array of category objects
      */
-    getBankCategories(): Promise<BankCategoryTypeExt[]>;
+    getBankCategories(): Promise<BankCategoryTypeOut[]>;
 
     /**
      * Create a new category
@@ -118,7 +118,7 @@ export interface PiggybankModel {
      * 
      * @returns An object with the newly created category data
      */
-    createBankCategory(cat: BankCategoryType[]): Promise<BankCategoryTypeExt[]>;
+    createBankCategory(cat: BankCategoryTypeIn[]): Promise<BankCategoryTypeOut[]>;
 
     /**
      * Update an existing bank category
@@ -128,7 +128,7 @@ export interface PiggybankModel {
      * 
      * @returns An updated category object
      */
-    updateBankCategory(id: number, data: Partial<BankCategoryType>): Promise<BankCategoryTypeExt>;
+    updateBankCategory(id: number, data: Partial<BankCategoryTypeIn>): Promise<BankCategoryTypeOut>;
 
     /**
      * Delete an existing bank category
@@ -137,14 +137,14 @@ export interface PiggybankModel {
      * 
      * @returns Data of the deleted category
      */
-    deleteBankCategory(id: number): Promise<BankCategoryTypeExt>;
+    deleteBankCategory(id: number): Promise<BankCategoryTypeOut>;
 
     /**
      * Delete all existing bank categories
      * 
      * @returns The deleted category objects
      */
-    deleteAllBankCategories(): Promise<BankCategoryTypeExt[]>;
+    deleteAllBankCategories(): Promise<BankCategoryTypeOut[]>;
 
 
     /**

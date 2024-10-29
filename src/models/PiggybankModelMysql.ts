@@ -1,10 +1,10 @@
 import mysql from "mysql2/promise";
 import { 
     type PiggybankModel,
-    type BankAccountType, 
-    type BankAccountTypeExt,
-    type BankCategoryType,
-    type BankCategoryTypeExt
+    type BankAccountTypeIn, 
+    type BankAccountTypeOut,
+    type BankCategoryTypeIn,
+    type BankCategoryTypeOut
 } from "./ModelDefinitions";
 import { PBDuplicateRecord, PBNotFoundError } from "./PiggybankModelErrors";
 
@@ -14,8 +14,8 @@ interface StaticTableResult extends mysql.RowDataPacket {
     id: number,
     name: string
 }
-interface DBBankAccountTypeExt extends mysql.RowDataPacket, BankAccountTypeExt {}
-interface DBBankCategoryTypeExt extends mysql.RowDataPacket, BankCategoryTypeExt {}
+interface DBBankAccountType extends mysql.RowDataPacket, BankAccountTypeOut {}
+interface DBBankCategoryTypeExt extends mysql.RowDataPacket, BankCategoryTypeOut {}
 
 
 /**
@@ -105,10 +105,10 @@ export class PiggybankModelMysql implements PiggybankModel {
      * 
      * @returns Array of account objects
      */
-    getBankAccounts = async (): Promise<BankAccountTypeExt[]> => {
-        let ret: BankAccountTypeExt[] = [];
+    getBankAccounts = async (): Promise<BankAccountTypeOut[]> => {
+        let ret: BankAccountTypeOut[] = [];
 
-        const [rows] = await this.pool.query<DBBankAccountTypeExt[]>(
+        const [rows] = await this.pool.query<DBBankAccountType[]>(
             "SELECT * FROM bank_accounts ORDER BY id ASC"
         );
 
@@ -133,7 +133,7 @@ export class PiggybankModelMysql implements PiggybankModel {
      * 
      * @returns An object with the newly created account data
      */
-    createBankAccount = async (acc: BankAccountType[]): Promise<BankAccountTypeExt[]> => {
+    createBankAccount = async (acc: BankAccountTypeIn[]): Promise<BankAccountTypeOut[]> => {
         let ret = [];
 
         const values = acc.map((item) => {
@@ -147,7 +147,7 @@ export class PiggybankModelMysql implements PiggybankModel {
             const firstId = (insertResult as any).insertId;
             const lastId = firstId + (insertResult as any).affectedRows - 1;
 
-            const [rows] = await this.pool.query<DBBankAccountTypeExt[]>(
+            const [rows] = await this.pool.query<DBBankAccountType[]>(
                 "SELECT * FROM bank_accounts WHERE id BETWEEN ? AND ?",
                 [firstId, lastId]
             );
@@ -183,7 +183,7 @@ export class PiggybankModelMysql implements PiggybankModel {
      * 
      * @returns An updated account object
      */
-    updateBankAccount = async (id: number, data: Partial<BankAccountType>): Promise<BankAccountTypeExt> => {
+    updateBankAccount = async (id: number, data: Partial<BankAccountTypeIn>): Promise<BankAccountTypeOut> => {
         let fields = [];
         let values = [];
 
@@ -213,7 +213,7 @@ export class PiggybankModelMysql implements PiggybankModel {
             values.concat([id.toString()])
         );
 
-        const [rows] = await this.pool.query<DBBankAccountTypeExt[]>(
+        const [rows] = await this.pool.query<DBBankAccountType[]>(
             "SELECT * FROM bank_accounts WHERE id = ?",
             [id]
         );
@@ -232,9 +232,9 @@ export class PiggybankModelMysql implements PiggybankModel {
      * 
      * @returns The deleted account object data
      */
-    deleteBankAccount = async (id: number): Promise<BankAccountTypeExt> => {
+    deleteBankAccount = async (id: number): Promise<BankAccountTypeOut> => {
         // First try to get the account to be deleted
-        const [rows] = await this.pool.query<DBBankAccountTypeExt[]>(
+        const [rows] = await this.pool.query<DBBankAccountType[]>(
             "SELECT * FROM bank_accounts WHERE id = ?",
             [id]
         );
@@ -265,8 +265,8 @@ export class PiggybankModelMysql implements PiggybankModel {
      * 
      * @returns Array of category objects
      */
-    getBankCategories = async (): Promise<BankCategoryTypeExt[]> => {
-        let ret: BankCategoryTypeExt[] = [];
+    getBankCategories = async (): Promise<BankCategoryTypeOut[]> => {
+        let ret: BankCategoryTypeOut[] = [];
 
         const [rows] = await this.pool.query<DBBankCategoryTypeExt[]>(
             "SELECT * FROM bank_categories ORDER BY id ASC"
@@ -291,7 +291,7 @@ export class PiggybankModelMysql implements PiggybankModel {
      * 
      * @returns An object with the newly created category data
      */
-    createBankCategory = async (cat: BankCategoryType[]): Promise<BankCategoryTypeExt[]> => {
+    createBankCategory = async (cat: BankCategoryTypeIn[]): Promise<BankCategoryTypeOut[]> => {
         let ret = [];
 
         const values = cat.map((item) => {
@@ -339,7 +339,7 @@ export class PiggybankModelMysql implements PiggybankModel {
      * 
      * @returns An updated category object
      */
-    updateBankCategory = async (id: number, data: Partial<BankCategoryType>): Promise<BankCategoryTypeExt> => {
+    updateBankCategory = async (id: number, data: Partial<BankCategoryTypeIn>): Promise<BankCategoryTypeOut> => {
         let fields = [];
         let values = [];
 
@@ -380,7 +380,7 @@ export class PiggybankModelMysql implements PiggybankModel {
      * 
      * @returns Data of the deleted category
      */
-    deleteBankCategory = async (id: number): Promise<BankCategoryTypeExt> => {
+    deleteBankCategory = async (id: number): Promise<BankCategoryTypeOut> => {
         // First try to get the category to be deleted
         const [rows] = await this.pool.query<DBBankCategoryTypeExt[]>(
             "SELECT * FROM bank_categories WHERE id = ?",
@@ -406,8 +406,8 @@ export class PiggybankModelMysql implements PiggybankModel {
      * 
      * @returns The deleted category objects
      */
-    deleteAllBankCategories = async (): Promise<BankCategoryTypeExt[]> => {
-        let ret: BankCategoryTypeExt[] = [];
+    deleteAllBankCategories = async (): Promise<BankCategoryTypeOut[]> => {
+        let ret: BankCategoryTypeOut[] = [];
 
         const [rows] = await this.pool.query<DBBankCategoryTypeExt[]>(
             "SELECT * FROM bank_categories ORDER BY id ASC"

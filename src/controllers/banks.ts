@@ -13,10 +13,10 @@ import {
     type PiggybankModel, 
     bankAccountSchema,
     bankAccountArraySchema,
-    type BankAccountTypeExt,
+    type BankAccountTypeOut,
     bankCategorySchema,
     bankCategoryArraySchema,
-    type BankCategoryTypeExt
+    type BankCategoryTypeOut
 } from '../models/ModelDefinitions.ts';
 
 import {
@@ -97,7 +97,7 @@ export default class BanksController {
         }
         else {
             try {
-                let ret: BankAccountTypeExt[];
+                let ret: BankAccountTypeOut[];
                 ret = await this.piggybankModel.createBankAccount(validatedSchema.data);
                 res.status(200).json(ret);
             }
@@ -219,7 +219,7 @@ export default class BanksController {
         }
         else {
             try {
-                let ret: BankCategoryTypeExt[];
+                let ret: BankCategoryTypeOut[];
                 ret = await this.piggybankModel.createBankCategory(validatedSchema.data);
                 res.status(200).json(ret);
             }
