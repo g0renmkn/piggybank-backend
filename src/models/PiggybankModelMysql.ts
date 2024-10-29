@@ -4,7 +4,9 @@ import {
     type BankAccountTypeIn, 
     type BankAccountTypeOut,
     type BankCategoryTypeIn,
-    type BankCategoryTypeOut
+    type BankCategoryTypeOut,
+    type BankMovementTypeIn,
+    type BankMovementTypeOut
 } from "./ModelDefinitions";
 import { PBDuplicateRecord, PBNotFoundError } from "./PiggybankModelErrors";
 
@@ -430,12 +432,62 @@ export class PiggybankModelMysql implements PiggybankModel {
     }
 
     /**
+     * Get an array of available bank movements
+     * 
+     * @returns An array of bank movements
+     */
+    getBankMovements = async (queryOpts: any): Promise<BankMovementTypeOut[]> => {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     * Create a set of new bank movements
+     * 
+     * @param movs Array of movement objects to be created
+     * @returns An array of created bank movements
+     */
+    createBankMovements = async (movs: BankMovementTypeIn[]): Promise<BankMovementTypeOut[]> => {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     * Update an existing bank movement
+     * 
+     * @param id ID of the bank movement to be updated
+     * @param mov New data for the bank movement
+     * @returns An updated bank movement
+     */
+    updateBankMovement = async (id: number, mov: Partial<BankMovementTypeIn>): Promise<BankMovementTypeOut> => {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     * Delete an existing bank movement
+     * 
+     * @param id ID of the bank movement to be deleted
+     * @returns The deleted bank movement
+     */
+    deleteBankMovement = async (id: number): Promise<BankMovementTypeOut> => {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     * Delete all bank movements
+     * 
+     * @returns Nothing
+     */
+    deleteAllBankMovements = async (): Promise<void> => {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
      * Clear all data from the data model
      */
     clearAllData = async (): Promise<void> => {
         await this.pool.query("SET foreign_key_checks = 0");
         await this.pool.query(`TRUNCATE TABLE bank_accounts`);
         await this.pool.query(`TRUNCATE TABLE bank_categories`);
+        await this.pool.query(`TRUNCATE TABLE bank_movs`);
         await this.pool.query("SET foreign_key_checks = 1");
     }
 }

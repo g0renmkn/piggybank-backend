@@ -3,13 +3,17 @@ import {
     bankAccountSchema,
     bankAccountArraySchema,
     bankCategorySchema,
-    bankCategoryArraySchema
+    bankCategoryArraySchema,
+    bankMovementSchema,
+    bankMovementArraySchema
 } from "./ModelSchemas";
 import {
     type BankAccountTypeIn,
     type BankAccountTypeOut,
     type BankCategoryTypeIn,
-    type BankCategoryTypeOut
+    type BankCategoryTypeOut,
+    type BankMovementTypeIn,
+    type BankMovementTypeOut
 } from "./ModelTypes";
 
 
@@ -22,6 +26,11 @@ export { bankCategorySchema };
 export { bankCategoryArraySchema };
 export { type BankCategoryTypeIn };
 export { type BankCategoryTypeOut };
+
+export { bankMovementSchema };
+export { bankMovementArraySchema };
+export { type BankMovementTypeIn };
+export { type BankMovementTypeOut };
 
 
 /**
@@ -146,6 +155,44 @@ export interface PiggybankModel {
      */
     deleteAllBankCategories(): Promise<BankCategoryTypeOut[]>;
 
+    /**
+     * Get an array of available bank movements
+     * 
+     * @returns Array of movement objects
+     */
+    getBankMovements(queryOpts: any): Promise<BankMovementTypeOut[]>;
+
+    /**
+     * Create a new set of bank movements
+     * 
+     * @param mvmnts Array of movement objects to be created
+     *
+     */
+    createBankMovements(movs: BankMovementTypeIn[]): Promise<BankMovementTypeOut[]>;
+
+    /**
+     * Update an existing bank movement
+     * 
+     * @param id ID of the movement to be updated
+     * @param data Movement data to be updated
+     * 
+     * @returns An updated movement object
+     */
+    updateBankMovement(id: number, mov: Partial<BankMovementTypeIn>): Promise<BankMovementTypeOut>;
+
+    /**
+     * Delete an existing bank movement
+     * 
+     * @param id ID of the movement to be deleted
+     * 
+     * @returns Data of the deleted movement
+     */
+    deleteBankMovement(id: number): Promise<BankMovementTypeOut>;
+
+    /**
+     * Delete all existing bank movements
+     */
+    deleteAllBankMovements(): Promise<void>;
 
     /**
      * Clear all data from the data model
