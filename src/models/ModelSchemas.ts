@@ -52,3 +52,34 @@ export const bankCategorySchema = z.object({
 export const bankCategoryArraySchema = z
     .array(bankCategorySchema)
     .nonempty("Data empty");
+
+
+// Schema for bank movement validation
+export const bankMovementSchema = z.object({
+    acc_id: z.number().positive("Account ID must be a positive number"),
+    date: z
+        .string()
+        .datetime("Date must follow the 'YYYY-MM-DDTHH:MM:SS.uuuZ format'"),
+    category: z.number().positive("Category ID must be a positive number"),
+    description: z
+        .string()
+        .max(100, "Description is too long (max=100)")
+        .optional()
+        .default(""),
+    value: z
+        .number(),
+    periodicity: z
+        .number()
+        .positive("Periodicity must be a positive number")
+        .default(1),
+    notes: z
+        .string()
+        .max(200, "Notes are too long (max=200)")
+        .optional()
+        .default(""),
+});
+
+// Schema for an array of bank movements
+export const bankMovementArraySchema = z
+    .array(bankMovementSchema)
+    .nonempty("Data empty");
