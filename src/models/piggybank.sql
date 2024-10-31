@@ -103,3 +103,25 @@ CREATE TABLE `bank_categories` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 );
+
+
+-- --------------------------------------------------------
+-- Table structure for table `bank_movements`
+--
+CREATE TABLE `bank_movs` (
+  `id` int NOT NULL,
+  `acc_id` int NOT NULL,
+  `date` datetime NOT NULL,
+  `category` int DEFAULT '1',
+  `description` varchar(50) NOT NULL,
+  `value` decimal(12,2) NOT NULL,
+  `periodicity` int DEFAULT '1',
+  `notes` varchar(100) DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `acc_id` (`acc_id`),
+  KEY `category` (`category`),
+  KEY `periodicity` (`periodicity`),
+  CONSTRAINT `bank_movs_ibfk_1` FOREIGN KEY (`acc_id`) REFERENCES `bank_accounts` (`id`),
+  CONSTRAINT `bank_movs_ibfk_2` FOREIGN KEY (`category`) REFERENCES `bank_categories` (`id`),
+  CONSTRAINT `bank_movs_ibfk_3` FOREIGN KEY (`periodicity`) REFERENCES `bank_periodicities` (`id`)
+);
