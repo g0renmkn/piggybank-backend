@@ -2,8 +2,8 @@ import { describe, expect, it } from "bun:test";
 import { PiggybankModelVar } from '../../models/PiggybankModelVar.ts';
 import { PiggybankModelMysql } from "../../models/PiggybankModelMysql.ts";
 import { 
-    generateValidBankAccount,
-    generateValidBankCategory
+    generateValidBankAccounts,
+    generateValidBankCategories
 } from "./utils.ts";
 import { PBDuplicateRecord, PBNotFoundError } from "../../models/PiggybankModelErrors.ts";
 import { cfg } from "../../cfg.ts";
@@ -28,13 +28,13 @@ describe.each([  // run tests for each model implementation
             let errorRaised = false;
 
             const wrappedFunction = async () =>  {
-                const accountRecord = generateValidBankAccount();
+                const accountRecord = generateValidBankAccounts(1);
                 const model = new modelImplementation(modelOpts);
                 
                 await model.initModel();
     
-                await model.createBankAccount([accountRecord]);
-                await model.createBankAccount([accountRecord]);
+                await model.createBankAccount(accountRecord);
+                await model.createBankAccount(accountRecord);
             }
 
             try {
@@ -53,7 +53,7 @@ describe.each([  // run tests for each model implementation
             let errorRaised = false;
 
             const wrappedFunction = async () =>  {
-                const accountRecord = generateValidBankAccount();
+                const accountRecord = generateValidBankAccounts(1)[0];
                 const model = new modelImplementation(modelOpts);
                 await model.initModel();
     
@@ -74,15 +74,11 @@ describe.each([  // run tests for each model implementation
         // TEST - successful creation of accounts
         it('Should successfully add the generated accounts', async () => {
             const rndNumber = Math.floor(10*Math.random() + 1);
-            const newRecords = []
-            const model = new modelImplementation(modelOpts);
-            
+            const newRecords = generateValidBankAccounts(rndNumber);
+
+            const model = new modelImplementation(modelOpts);            
             await model.initModel();
 
-            // Create a bunch of bank accounts
-            for(let i=0; i<rndNumber; i++) {
-                newRecords.push(generateValidBankAccount());
-            }
             const createdRecords = await model.createBankAccount(newRecords);
 
             expect(createdRecords.length).toBe(rndNumber);
@@ -118,15 +114,11 @@ describe.each([  // run tests for each model implementation
         // TEST - get all records (non empty)
         it('Should return an array with the correctly added records', async () => {
             const rndNumber = Math.floor(10*Math.random() + 1);
-            const records = []
-            const model = new modelImplementation(modelOpts);
+            const records = generateValidBankAccounts(rndNumber);
 
+            const model = new modelImplementation(modelOpts);
             await model.initModel();
 
-            // Create a bunch of bank accounts
-            for(let i=0; i<rndNumber; i++) {
-                records.push(generateValidBankAccount());
-            }
             await model.createBankAccount(records);
 
             // Check the generated accounts
@@ -156,7 +148,7 @@ describe.each([  // run tests for each model implementation
             let errorRaised = false;
 
             const wrappedFunction = async () =>  {
-                const accountRecord = generateValidBankAccount();
+                const accountRecord = generateValidBankAccounts(1);
                 const model = new modelImplementation(modelOpts);
                 const modification = {
                     name: "random name"
@@ -165,7 +157,7 @@ describe.each([  // run tests for each model implementation
                 await model.initModel();
     
                 // First create an account
-                await model.createBankAccount([accountRecord]);
+                await model.createBankAccount(accountRecord);
 
                 // Then update an account with wrong ID
                 await model.updateBankAccount(345, modification);
@@ -184,7 +176,7 @@ describe.each([  // run tests for each model implementation
 
         // TEST - successful update of a bank account
         it('Should correctly update the selected record', async () => {
-            const accountRecord = generateValidBankAccount();
+            const accountRecord = generateValidBankAccounts(1)[0];
             const model = new modelImplementation(modelOpts);
             const modification = {
                 name: "random name"
@@ -210,13 +202,13 @@ describe.each([  // run tests for each model implementation
             let errorRaised = false;
 
             const wrappedFunction = async () =>  {
-                const accountRecord = generateValidBankAccount();
+                const accountRecord = generateValidBankAccounts(1);
                 const model = new modelImplementation(modelOpts);
 
                 await model.initModel();
     
                 // First create an account
-                await model.createBankAccount([accountRecord]);
+                await model.createBankAccount(accountRecord);
 
                 // Then delete an account with wrong ID
                 await model.deleteBankAccount(345);
@@ -235,7 +227,7 @@ describe.each([  // run tests for each model implementation
 
         // TEST - successfully delete a bank account
         it('Should succeed correctly deleting the specified account', async () => {
-            const accountRecord = generateValidBankAccount();
+            const accountRecord = generateValidBankAccounts(1)[0];
             const model = new modelImplementation(modelOpts);
 
             await model.initModel();
@@ -256,13 +248,9 @@ describe.each([  // run tests for each model implementation
     describe('deleteAllBankAccounts()', () => {
         // TEST - delete all accounts
         it('Should successfully delete all accounts', async () => {
-            const records = [
-                generateValidBankAccount(),
-                generateValidBankAccount(),
-                generateValidBankAccount()
-            ];
-            const model = new modelImplementation(modelOpts);
+            const records = generateValidBankAccounts(3);
 
+            const model = new modelImplementation(modelOpts);
             await model.initModel();
 
             await model.createBankAccount(records);
@@ -280,13 +268,13 @@ describe.each([  // run tests for each model implementation
             let errorRaised = false;
 
             const wrappedFunction = async () =>  {
-                const categoryRecord = generateValidBankCategory();
+                const categoryRecord = generateValidBankCategories(1);
                 const model = new modelImplementation(modelOpts);
                 
                 await model.initModel();
     
-                await model.createBankCategory([categoryRecord]);
-                await model.createBankCategory([categoryRecord]);
+                await model.createBankCategory(categoryRecord);
+                await model.createBankCategory(categoryRecord);
             }
 
             try {
@@ -305,7 +293,7 @@ describe.each([  // run tests for each model implementation
             let errorRaised = false;
 
             const wrappedFunction = async () =>  {
-                const categoryRecord = generateValidBankCategory();
+                const categoryRecord = generateValidBankCategories(1)[0];
                 const model = new modelImplementation(modelOpts);
                 await model.initModel();
     
@@ -326,15 +314,11 @@ describe.each([  // run tests for each model implementation
         // TEST - successful creation of categories
         it('Should successfully add the generated categories', async () => {
             const rndNumber = Math.floor(10*Math.random() + 1);
-            const newRecords = []
+            const newRecords = generateValidBankCategories(rndNumber);
+
             const model = new modelImplementation(modelOpts);
-            
             await model.initModel();
 
-            // Create a bunch of bank categories
-            for(let i=0; i<rndNumber; i++) {
-                newRecords.push(generateValidBankCategory());
-            }
             const createdRecords = await model.createBankCategory(newRecords);
 
             expect(createdRecords.length).toBe(rndNumber);
@@ -369,15 +353,11 @@ describe.each([  // run tests for each model implementation
         // TEST - get all records (non empty)
         it('Should return an array with the correctly added records', async () => {
             const rndNumber = Math.floor(10*Math.random() + 1);
-            const records = []
-            const model = new modelImplementation(modelOpts);
+            const records = generateValidBankCategories(rndNumber);
 
+            const model = new modelImplementation(modelOpts);
             await model.initModel();
 
-            // Create a bunch of bank categories
-            for(let i=0; i<rndNumber; i++) {
-                records.push(generateValidBankCategory());
-            }
             await model.createBankCategory(records);
 
             // Check the generated categories
@@ -406,7 +386,7 @@ describe.each([  // run tests for each model implementation
             let errorRaised = false;
 
             const wrappedFunction = async () =>  {
-                const categoryRecord = generateValidBankCategory();
+                const categoryRecord = generateValidBankCategories(1);
                 const model = new modelImplementation(modelOpts);
                 const modification = {
                     name: "random name"
@@ -415,7 +395,7 @@ describe.each([  // run tests for each model implementation
                 await model.initModel();
     
                 // First create an category
-                await model.createBankCategory([categoryRecord]);
+                await model.createBankCategory(categoryRecord);
 
                 // Then update an category with wrong ID
                 await model.updateBankCategory(345, modification);
@@ -434,7 +414,7 @@ describe.each([  // run tests for each model implementation
         
         // TEST - successful update of a bank category
         it('Should correctly update the selected record', async () => {
-            const categoryRecord = generateValidBankCategory();
+            const categoryRecord = generateValidBankCategories(1)[0];
             const model = new modelImplementation(modelOpts);
             const modification = {
                 name: "random name"
@@ -460,13 +440,13 @@ describe.each([  // run tests for each model implementation
             let errorRaised = false;
 
             const wrappedFunction = async () =>  {
-                const categoryRecord = generateValidBankCategory();
+                const categoryRecord = generateValidBankCategories(1);
                 const model = new modelImplementation(modelOpts);
 
                 await model.initModel();
     
                 // First create an category
-                await model.createBankCategory([categoryRecord]);
+                await model.createBankCategory(categoryRecord);
 
                 // Then delete an category with wrong ID
                 await model.deleteBankCategory(345);
@@ -485,7 +465,7 @@ describe.each([  // run tests for each model implementation
 
         // TEST - successfully delete a bank category
         it('Should succeed correctly deleting the specified category', async () => {
-            const categoryRecord = generateValidBankCategory();
+            const categoryRecord = generateValidBankCategories(1)[0];
             const model = new modelImplementation(modelOpts);
 
             await model.initModel();
@@ -506,11 +486,7 @@ describe.each([  // run tests for each model implementation
     describe('deleteAllBankCategories()', () => {
         // TEST - delete all categories
         it('Should successfully delete all categories', async () => {
-            const records = [
-                generateValidBankCategory(),
-                generateValidBankCategory(),
-                generateValidBankCategory()
-            ];
+            const records = generateValidBankCategories(3);
             const model = new modelImplementation(modelOpts);
 
             await model.initModel();

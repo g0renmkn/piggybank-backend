@@ -5,7 +5,7 @@ import { type PiggybankModel } from '../../models/ModelDefinitions.ts';
 import { PiggybankModelVar } from '../../models/PiggybankModelVar.ts';
 import { PiggybankModelMysql } from "../../models/PiggybankModelMysql.ts";
 import { faker } from "@faker-js/faker";
-import { generateValidBankAccount } from './utils.ts';
+import { generateValidBankAccounts } from './utils.ts';
 import { cfg } from "../../cfg.ts";
 
 const mysqlConnection = {
@@ -55,16 +55,11 @@ describe.each([
         // TEST - get all records (non empty)
         it('Should return an array with the correctly added records', async () => {
             const numElements = Math.floor(Math.random()*10 + 1);
-            const dataArr = [];
 
             model.deleteAllBankAccounts();
 
-            // Generate the accounts
-            for(let i=0; i<numElements; i++) {
-                dataArr.push(generateValidBankAccount())
-            }
             // Create accounts in the model
-            await model.createBankAccount(dataArr);
+            await model.createBankAccount(generateValidBankAccounts(numElements));
             
             const res = await request(piggyApp.app).get("/banks/accounts");
             expect(res.status, "Request to /banks/accounts should return 200").toBe(200);
@@ -85,7 +80,7 @@ describe.each([
         // TEST - missing account name
         it('Should fail due to name missing', async () => {
             // Generate a valid account without a name
-            let {name, ...accountRecord} = generateValidBankAccount();
+            let {name, ...accountRecord} = generateValidBankAccounts(1)[0];
 
             const res = await request(piggyApp.app)
                 .post("/banks/accounts")
@@ -101,7 +96,7 @@ describe.each([
 
         // TEST - account name too long
         it('Should fail due to name too long', async () => {
-            let accountRecord = generateValidBankAccount();
+            let accountRecord = generateValidBankAccounts(1)[0];
 
             // Modify name to exceed constraints
             accountRecord.name = faker.string.sample({min: 31, max: 31});
@@ -119,7 +114,7 @@ describe.each([
         // TEST - account iban missing
         it('Should fail due to iban missing', async () => {
             // Generate a valid account without an iban
-            let {iban, ...accountRecord} = generateValidBankAccount();
+            let {iban, ...accountRecord} = generateValidBankAccounts(1)[0];
 
             const res = await request(piggyApp.app)
                 .post("/banks/accounts")
@@ -135,7 +130,7 @@ describe.each([
 
         // TEST - account iban too long
         it('Should fail due to iban too long', async () => {
-            let accountRecord = generateValidBankAccount();
+            let accountRecord = generateValidBankAccounts(1)[0];
 
             // Modify iban to exceed constraints
             accountRecord.iban = faker.string.sample({min: 35, max: 35});
@@ -152,7 +147,7 @@ describe.each([
 
         // TEST - wrong date
         it('Should fail due to date in wrong format', async () => {
-            let accountRecord = generateValidBankAccount();
+            let accountRecord = generateValidBankAccounts(1)[0];
 
             // Modify closed to exceed constraints
             accountRecord.closed = "wrong date"
@@ -173,7 +168,7 @@ describe.each([
             // NOTE: this is done like this to avoid type error if we
             //       first generate the record and then overwrite it with
             //       a number
-            let accountRecord = { ...generateValidBankAccount(), comments: 25 }
+            let accountRecord = { ...generateValidBankAccounts(), comments: 25 }
 
             const res = await request(piggyApp.app)
                 .post("/banks/accounts")
@@ -187,7 +182,7 @@ describe.each([
 
         // TEST - account comments too long
         it('Should fail due to comments too long', async () => {
-            let accountRecord = generateValidBankAccount();
+            let accountRecord = generateValidBankAccounts(1)[0];
 
             // Modify iban to exceed constraints
             accountRecord.comments = faker.string.sample({min: 201, max: 201});
@@ -204,15 +199,15 @@ describe.each([
 
         // TEST - duplicated entry
         it('Should fail due to duplicated entry', async () => {
-            const accountRecord = generateValidBankAccount();
+            const accountRecord = generateValidBankAccounts(1);
 
             // First add the record
-            await model.createBankAccount([accountRecord]);
+            await model.createBankAccount(accountRecord);
 
             // Next add it via POST again
             const res = await request(piggyApp.app)
                 .post("/banks/accounts")
-                .send([accountRecord]);
+                .send(accountRecord);
 
             expect(res.status).toBe(403);
             expect(res.body).toBeObject();
@@ -222,7 +217,7 @@ describe.each([
 
         // TEST - successful post
         it('Should succeed on correct posting', async () => {
-            const accountRecord = generateValidBankAccount();
+            const accountRecord = generateValidBankAccounts(1)[0];
 
             const res = await request(piggyApp.app)
                 .post("/banks/accounts")
@@ -239,12 +234,12 @@ describe.each([
 
         // PREPARE TESTS
         beforeEach(async () => {
-            const accountRecord = generateValidBankAccount();
+            const accountRecord = generateValidBankAccounts(1);
             
             piggyApp = new PiggyApp(model);
 
             // Generate a new account record
-            const addedAccount = await model.createBankAccount([accountRecord]);
+            const addedAccount = await model.createBankAccount(accountRecord);
             accId = addedAccount[0].id;
         });
 
@@ -328,7 +323,7 @@ describe.each([
 
         // TEST - successful update
         it('Should succeed when the update is valid', async () => {
-            const modification = generateValidBankAccount();
+            const modification = generateValidBankAccounts(1)[0];
 
             const res = await request(piggyApp.app)
                 .patch(`/banks/accounts/${accId}`)
@@ -345,12 +340,12 @@ describe.each([
 
         // PREPARE TESTS
         beforeEach(async () => {
-            const accountRecord = generateValidBankAccount();
+            const accountRecord = generateValidBankAccounts(1);
             
             piggyApp = new PiggyApp(model);
 
             // Generate a new account record
-            const addedAccount = await model.createBankAccount([accountRecord]);
+            const addedAccount = await model.createBankAccount(accountRecord);
             accId = addedAccount[0].id;
         });
 

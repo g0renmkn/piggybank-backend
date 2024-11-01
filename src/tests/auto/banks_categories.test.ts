@@ -5,7 +5,7 @@ import { type PiggybankModel } from '../../models/ModelDefinitions.ts';
 import { PiggybankModelVar } from '../../models/PiggybankModelVar.ts';
 import { PiggybankModelMysql } from "../../models/PiggybankModelMysql.ts";
 import { faker } from "@faker-js/faker";
-import { generateValidBankCategory } from './utils.ts';
+import { generateValidBankCategories } from './utils.ts';
 import { cfg } from "../../cfg.ts";
 
 const mysqlConnection = {
@@ -54,14 +54,10 @@ describe.each([  // run tests for each model implementation
         // TEST - get all records (non empty)
         it('Should return an array with the correctly added records', async () => {
             const numElements = Math.floor(Math.random()*10 + 1);
-            const dataArr = [];
+            const dataArr = generateValidBankCategories(numElements);
 
             model.deleteAllBankCategories();
 
-            // Generate the categories
-            for(let i=0; i<numElements; i++) {
-                dataArr.push(generateValidBankCategory())
-            }
             // Create categories in the model
             await model.createBankCategory(dataArr);
             
@@ -83,7 +79,7 @@ describe.each([  // run tests for each model implementation
         // TEST - missing category name
         it('Should fail due to name missing', async () => {
             // Generate a valid category without a name
-            let {name, ...categoryRecord} = generateValidBankCategory();
+            let {name, ...categoryRecord} = generateValidBankCategories(1)[0];
 
             const res = await request(piggyApp.app)
                 .post("/banks/categories")
@@ -99,7 +95,7 @@ describe.each([  // run tests for each model implementation
 
         // TEST - category name too long
         it('Should fail due to name too long', async () => {
-            let categoryRecord = generateValidBankCategory();
+            let categoryRecord = generateValidBankCategories(1)[0];
 
             // Modify name to exceed constraints
             categoryRecord.name = faker.string.sample({min: 31, max: 31});
@@ -116,7 +112,7 @@ describe.each([  // run tests for each model implementation
 
         // TEST - category description too long
         it('Should fail due to description too long', async () => {
-            let categoryRecord = generateValidBankCategory();
+            let categoryRecord = generateValidBankCategories(1)[0];
 
             // Modify description to exceed constraints
             categoryRecord.description = faker.string.sample({min: 201, max: 201});
@@ -133,7 +129,7 @@ describe.each([  // run tests for each model implementation
 
         // TEST - category icon too long
         it('Should fail due to icon too long', async () => {
-            let categoryRecord = generateValidBankCategory();
+            let categoryRecord = generateValidBankCategories(1)[0];
 
             // Modify icon to exceed constraints
             categoryRecord.icon = faker.string.sample({min: 101, max: 101});
@@ -150,15 +146,15 @@ describe.each([  // run tests for each model implementation
 
         // TEST - duplicated entry
         it('Should fail due to duplicated entry', async () => {
-            const categoryRecord = generateValidBankCategory();
+            const categoryRecord = generateValidBankCategories(1);
 
             // First add the record
-            await model.createBankCategory([categoryRecord]);
+            await model.createBankCategory(categoryRecord);
 
             // Next add it via POST again
             const res = await request(piggyApp.app)
                 .post("/banks/categories")
-                .send([categoryRecord]);
+                .send(categoryRecord);
 
             expect(res.status).toBe(403);
             expect(res.body).toBeObject();
@@ -168,11 +164,11 @@ describe.each([  // run tests for each model implementation
 
         // TEST - successful post
         it('Should succeed on correct posting', async () => {
-            const categoryRecord = generateValidBankCategory();
+            const categoryRecord = generateValidBankCategories(1);
 
             const res = await request(piggyApp.app)
                 .post("/banks/categories")
-                .send([categoryRecord]);
+                .send(categoryRecord);
 
             expect(res.status).toBe(200);
         });
@@ -185,12 +181,12 @@ describe.each([  // run tests for each model implementation
 
         // PREPARE TESTS
         beforeEach(async () => {
-            const categoryRecord = generateValidBankCategory();
+            const categoryRecord = generateValidBankCategories(1);
             
             piggyApp = new PiggyApp(model);
 
             // Generate a new category record
-            const addedCategory = await model.createBankCategory([categoryRecord]);
+            const addedCategory = await model.createBankCategory(categoryRecord);
             catId = addedCategory[0].id;
         });
 
@@ -248,7 +244,7 @@ describe.each([  // run tests for each model implementation
 
         // TEST - successful update
         it('Should succeed when the update is valid', async () => {
-            const modification = generateValidBankCategory();
+            const modification = generateValidBankCategories(1)[0];
 
             const res = await request(piggyApp.app)
                 .patch(`/banks/categories/${catId}`)
@@ -265,12 +261,12 @@ describe.each([  // run tests for each model implementation
 
         // PREPARE TESTS
         beforeEach(async () => {
-            const categoryRecord = generateValidBankCategory();
+            const categoryRecord = generateValidBankCategories(1);
             
             piggyApp = new PiggyApp(model);
 
             // Generate a new category record
-            const addedCategory = await model.createBankCategory([categoryRecord]);
+            const addedCategory = await model.createBankCategory(categoryRecord);
             catId = addedCategory[0].id;
         });
 
