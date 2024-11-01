@@ -19,7 +19,7 @@ const mysqlConnection = {
 describe.each([  // run tests for each model implementation
 //    ['PiggybankModelVar', PiggybankModelVar, {}],
     ['PiggybankModelMysql', PiggybankModelMysql, mysqlConnection],
-])('%s', (name, modelImplementation, modelOpts) => {
+])('Bank categories [%s]', (name, modelImplementation, modelOpts) => {
     let model: PiggybankModel;
 
     // Prepare all tests
