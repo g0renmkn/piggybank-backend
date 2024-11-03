@@ -95,7 +95,7 @@ export class PiggybankModelMysql implements PiggybankModel {
      * @returns Array of possible values
      */
     getBankPeriodicities = async (): Promise<string[]> => {
-        const q = "SELECT * FROM data_bank_periodicities ORDER BY id ASC"
+        const q = "SELECT * FROM bank_periodicities ORDER BY id ASC"
         const [rows] = await this.pool.query<StaticTableResult[]>(q);
 
         return rows.map((row) => {return row.name});
