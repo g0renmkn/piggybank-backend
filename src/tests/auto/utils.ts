@@ -46,3 +46,60 @@ export function generateValidBankCategories(num: number = 1) {
     
     return ret;
 }
+
+
+/**
+ * generateValidBankMovements()
+ * 
+ * Generate an array of valid bank movement objects
+ *
+ * @param num Number of movements to generate
+ * @param accs Array of valid account IDs
+ * @param cats Array of valid category IDs
+ * @returns 
+ */
+export function generateValidBankMovements(num: number = 1, accs: number[], cats: number[], per: number) {
+    let ret = [];
+    
+    for(let i=0; i<num; i++) {
+        ret.push({
+            acc_id: accs[Math.floor(Math.random()*accs.length)],
+            date: faker.date.birthdate().toISOString(),
+            category: cats[Math.floor(Math.random()*cats.length)],
+            description: faker.string.sample({min: 100, max: 100}),
+            value: Number(faker.finance.amount()),
+            periodicity: Math.floor(Math.random()*per),
+            notes: faker.string.sample({min: 200, max: 200}),
+        });
+    }
+    
+    return ret;
+}
+
+
+/**
+ * generateDataSet()
+ * 
+ * Generate a valid data set for testing
+ *
+ * @param qty 
+ * @returns 
+ */
+export function generateValidDataSet(qty: { accounts?: number, categories?: number } ) {
+    const ret: any = {
+        accounts: [],
+        categories: []
+    }
+
+    // Generate accounts
+    if(qty.accounts && qty.accounts > 0) {
+        ret.accounts = generateValidBankAccounts(Math.floor(Math.random()*qty.accounts + 1));
+    }
+
+    // Generate categories
+    if(qty.categories && qty.categories > 0) {
+        ret.categories = generateValidBankCategories(Math.floor(Math.random()*qty.categories + 1));
+    }
+
+    return ret;
+}
