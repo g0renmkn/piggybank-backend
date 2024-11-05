@@ -160,7 +160,7 @@ export interface PiggybankModel {
      * 
      * @returns Array of movement objects
      */
-    getBankMovements(queryOpts: any): Promise<BankMovementTypeOut[]>;
+    getBankMovements(queryOpts?: any): Promise<BankMovementTypeOut[]>;
 
     /**
      * Create a new set of bank movements

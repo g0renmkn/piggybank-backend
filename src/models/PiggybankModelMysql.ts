@@ -436,7 +436,7 @@ export class PiggybankModelMysql implements PiggybankModel {
      * 
      * @returns An array of bank movements
      */
-    getBankMovements = async (queryOpts: any): Promise<BankMovementTypeOut[]> => {
+    getBankMovements = async (queryOpts: any = {}): Promise<BankMovementTypeOut[]> => {
         throw new Error("Method not implemented.");
     }
 
