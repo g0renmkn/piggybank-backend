@@ -609,14 +609,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "allOf": [
-                                            {
-                                                "$ref": "#/components/schemas/tableID"
-                                            },
-                                            {
-                                                "$ref": "#/components/schemas/bankMovData"
-                                            }
-                                        ]
+                                        "$ref": "#/components/schemas/bankMovDataOut"
                                     }
                                 }
                             }
@@ -641,7 +634,7 @@
                                             "required": ["acc_id", "date", "description", "value"]
                                         },
                                         {
-                                            "$ref": "#/components/schemas/bankMovData"
+                                            "$ref": "#/components/schemas/bankMovDataIn"
                                         }
                                     ]
                                 }
@@ -657,14 +650,7 @@
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "allOf": [
-                                            {
-                                                "$ref": "#/components/schemas/tableID"
-                                            },
-                                            {
-                                                "$ref": "#/components/schemas/bankMovData"
-                                            }
-                                        ]
+                                        "$ref": "#/components/schemas/bankMovDataOut"
                                     }
                                 }
                             }
@@ -702,7 +688,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/bankMovData"
+                                "$ref": "#/components/schemas/bankMovDataIn"
                             }
                         }
                     }
@@ -713,14 +699,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/tableID"
-                                        },
-                                        {
-                                            "$ref": "#/components/schemas/bankMovData"
-                                        }
-                                    ]
+                                    "$ref": "#/components/schemas/bankMovDataOut"
                                 }
                             }
                         }
@@ -755,14 +734,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "allOf": [
-                                        {
-                                            "$ref": "#/components/schemas/tableID"
-                                        },
-                                        {
-                                            "$ref": "#/components/schemas/bankMovData"
-                                        }
-                                    ]
+                                    "$ref": "#/components/schemas/bankMovDataOut"
                                 }
                             }
                         }
@@ -903,33 +875,13 @@
                     }
                 }
             },
-            "bankMovData": {
+            "bankMovDataCommon": {
                 "type": "object",
                 "properties": {
-                    "acc_id": {
-                        "type": "integer",
-                        "format": "int64",
-                        "description": "ID of the related account."
-                    },
                     "date": {
                         "type": "string",
                         "description": "Date of the movement.",
                         "format": "date-time"
-                    },
-                    "category": {
-                        "type": "object",
-                        "description": "Category of the movement.",
-                        "properties": {
-                            "id": {
-                                "type": "integer",
-                                "format": "int64",
-                                "description": "ID of the category."
-                            },
-                            "name": {
-                                "type": "string",
-                                "description": "Name of the category."
-                            }
-                        }
                     },
                     "description": {
                         "type": "string",
@@ -942,21 +894,6 @@
                         "description": "Value of the movement.",
                         "example": 100
                     },
-                    "periodicity": {
-                        "type": "object",
-                        "description": "Periodicity of the movement.",
-                        "properties": {
-                            "id": {
-                                "type": "integer",
-                                "format": "int64",
-                                "description": "ID of the periodicity."
-                            },
-                            "name": {
-                                "type": "string",
-                                "description": "Name of the periodicity."
-                            }
-                        }
-                    },
                     "notes": {
                         "type": "string",
                         "description": "Notes related to the movement.",
@@ -964,6 +901,93 @@
                         "example": "This is just an example note"
                     }                        
                 }
+            },
+            "bankMovDataIn": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/bankMovDataCommon"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "acc_id": {
+                                "type": "integer",
+                                "format": "int64",
+                                "description": "ID of the related account."
+                            },
+                            "category": {
+                                "type": "integer",
+                                "format": "int64",
+                                "description": "ID of the related category."
+                            },
+                            "periodicity": {
+                                "type": "integer",
+                                "format": "int64",
+                                "description": "ID of the related periodicity."
+                            }
+                        }
+                    }                    
+                ]
+            },
+            "bankMovDataOut": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/tableID"
+                    },
+                    {
+                        "$ref": "#/components/schemas/bankMovDataCommon"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "acc_id": {
+                                "type": "object",
+                                "description": "Related account with the movement.",
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "format": "int64",
+                                        "description": "ID of the account."
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "description": "Name of the account."
+                                    }
+                                }
+                            },
+                            "category": {
+                                "type": "object",
+                                "description": "Category of the movement.",
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "format": "int64",
+                                        "description": "ID of the category."
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "description": "Name of the category."
+                                    }
+                                }
+                            },
+                            "periodicity": {
+                                "type": "object",
+                                "description": "Periodicity of the movement.",
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "format": "int64",
+                                        "description": "ID of the periodicity."
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "description": "Name of the periodicity."
+                                    }
+                                }
+                            }
+                        }
+                    }                    
+                ]
             },
             "tableID": {
                 "type": "object",
