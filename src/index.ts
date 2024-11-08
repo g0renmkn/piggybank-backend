@@ -13,7 +13,8 @@ if (cfg.model==='mysql') {
         port: cfg.dbPort,
         user: cfg.dbUser,
         password: cfg.dbPass,
-        database: cfg.dbName
+        database: cfg.dbName,
+        decimalNumbers: true  // tweak to display numbers instead of strings in 'mysql2'
     });
 }
 else {
