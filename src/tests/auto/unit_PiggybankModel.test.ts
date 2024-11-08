@@ -1,12 +1,23 @@
 import { describe, expect, it } from "bun:test";
+import type { PiggybankModel } from "../../models/ModelDefinitions.ts";
 import { PiggybankModelVar } from '../../models/PiggybankModelVar.ts';
 import { PiggybankModelMysql } from "../../models/PiggybankModelMysql.ts";
 import { 
     generateValidBankAccounts,
-    generateValidBankCategories
+    generateValidBankCategories,
+    generateValidBankMovements,
+    generateValidDataSet
 } from "./utils.ts";
-import { PBDuplicateRecord, PBNotFoundError } from "../../models/PiggybankModelErrors.ts";
+import { 
+    PBDuplicateRecord, 
+    PBNotFoundError,
+    PBInvalidAccount,
+    PBInvalidCategory,
+    PBInvalidPeriodicity
+} from "../../models/PiggybankModelErrors.ts";
 import { cfg } from "../../cfg.ts";
+import { faker } from "@faker-js/faker";
+
 
 const mysqlConnection = {
     host: cfg.dbHost,
@@ -16,6 +27,33 @@ const mysqlConnection = {
     database: cfg.dbName
 }
 
+/**
+ * setupBankMovementsTest()
+ * 
+ * Setup the test environment for bank movements tests
+ *
+ * @param model 
+ */
+const setupBankMovementsTest = async (model: PiggybankModel) => {
+    await model.clearAllData();
+
+    // Create a set of accounts and categories
+    const dataSet = generateValidDataSet({accounts: 3, categories: 5});
+    const createdAccounts = await model.createBankAccount(dataSet.accounts);
+    const createdCategories = await model.createBankCategory(dataSet.categories);
+    const availablePeriodicities = await model.getBankPeriodicities();
+
+    return {
+        accArray: createdAccounts.map(a => a.id),
+        catArray: createdCategories.map(c => c.id),
+        periods: availablePeriodicities.length
+    }
+}
+
+
+/**
+ * Main test suite
+ */
 describe.each([  // run tests for each model implementation
 //    ['PiggybankModelVar', PiggybankModelVar, {}],
     ['PiggybankModelMysql', PiggybankModelMysql, mysqlConnection],
@@ -496,6 +534,350 @@ describe.each([  // run tests for each model implementation
 
             await model.deleteAllBankCategories();
             expect(await model.getBankCategories()).toBeEmpty();
+        });
+    });
+
+    // TEST SUITE - create bank movements
+    describe("createBankMovements()", () => {
+        it("Should fail when provided a wrong account ID", async () => {
+            let errorRaised = false;
+
+            const model = new modelImplementation(modelOpts);
+            await model.initModel();
+
+            // Generate basic data for the test
+            const {accArray, catArray, periods} = await setupBankMovementsTest(model);
+
+            try {
+                const movs = generateValidBankMovements(1, accArray, catArray, periods);
+                movs[0].acc_id += 1000;  // specify an invalid account ID
+                await model.createBankMovements(movs);
+            }
+            catch(err: any) {
+                expect(err).toBeInstanceOf(PBInvalidAccount);
+                errorRaised = true;
+            }
+
+            expect(errorRaised).toBe(true);
+        });
+
+        it("Should fail when provided a wrong category ID", async () => {
+            let errorRaised = false;
+
+            const model = new modelImplementation(modelOpts);
+            await model.initModel();
+
+            // Generate basic data for the test
+            const {accArray, catArray, periods} = await setupBankMovementsTest(model);
+
+            try {
+                const movs = generateValidBankMovements(1, accArray, catArray, periods);
+                movs[0].category += 1000;  // specify an invalid category ID
+                await model.createBankMovements(movs);
+            }
+            catch(err: any) {
+                expect(err).toBeInstanceOf(PBInvalidCategory);
+                errorRaised = true;
+            }
+
+            expect(errorRaised).toBe(true);
+        });
+
+        it("Should fail when provided a wrong periodicity ID", async () => {
+            let errorRaised = false;
+
+            const model = new modelImplementation(modelOpts);
+            await model.initModel();
+
+            // Generate basic data for the test
+            const {accArray, catArray, periods} = await setupBankMovementsTest(model);
+
+            try {
+                const movs = generateValidBankMovements(1, accArray, catArray, periods);
+                movs[0].periodicity += 1000;  // specify an invalid periodicity ID
+                await model.createBankMovements(movs);
+            }
+            catch(err: any) {
+                expect(err).toBeInstanceOf(PBInvalidPeriodicity);
+                errorRaised = true;
+            }
+
+            expect(errorRaised).toBe(true);
+        });
+
+        it('Should successfully create the generated movements', async () => {
+            const model = new modelImplementation(modelOpts);
+            await model.initModel();
+
+            // Generate basic data for the test
+            const {accArray, catArray, periods} = await setupBankMovementsTest(model);
+
+            const movs = generateValidBankMovements(5, accArray, catArray, periods);
+            await model.createBankMovements(movs);
+            
+            // Check the generated movements
+            const ret = await model.getBankMovements();
+            expect(ret).toBeArrayOfSize(movs.length);
+
+            // Check each record
+            movs.forEach((rec) => {
+                expect(ret).toEqual(
+                    expect.arrayContaining([
+                        expect.objectContaining({
+                            acc_id: rec.acc_id,
+                            date: rec.date,
+                            category: rec.category,
+                            description: rec.description,
+                            value: rec.value,
+                            periodicity: rec.periodicity,
+                            notes: rec.notes
+                        })
+                    ])
+                );
+            });
+        });
+    });
+
+    // TEST SUITE - get bank movements list
+    describe('getBankMovements()', () => {
+        // TEST - get all records (empty data)
+        it('Should return an empty list if no bank movements are found', async () => {
+            const model = new modelImplementation(modelOpts);
+            await model.initModel();
+
+            await model.clearAllData();
+
+            const ret = await model.getBankMovements();
+            expect(ret).toBeArrayOfSize(0);
+        });
+
+        // TEST - get all records (non empty)
+        it('Should return an array with the correctly added records', async () => {
+            const model = new modelImplementation(modelOpts);
+            await model.initModel();
+
+            // Generate basic data for the test
+            const {accArray, catArray, periods} = await setupBankMovementsTest(model);
+
+            const movs = generateValidBankMovements(5, accArray, catArray, periods);
+            await model.createBankMovements(movs);
+
+            const ret = await model.getBankMovements();
+            expect(ret).toBeArrayOfSize(movs.length);
+
+            // Check each record
+            movs.forEach((rec) => {
+                expect(ret).toEqual(
+                    expect.arrayContaining([
+                        expect.objectContaining({
+                            acc_id: rec.acc_id,
+                            date: rec.date,
+                            category: rec.category,
+                            description: rec.description,
+                            value: rec.value,
+                            periodicity: rec.periodicity,
+                            notes: rec.notes
+                        })
+                    ])
+                );
+            });
+        });
+    });
+
+    // TEST SUITE - update bank movement
+    describe('updateBankMovement()', () => {
+        // TEST - failure due to incorrect ID
+        it('Should throw an error when trying to update a non existing record', async () => {
+            let errorRaised = false;
+            const model = new modelImplementation(modelOpts);
+            await model.initModel();
+
+            // Generate basic data for the test
+            const {accArray, catArray, periods} = await setupBankMovementsTest(model);
+
+            try {
+                const movRecord = generateValidBankMovements(1, accArray, catArray, periods);
+                await model.createBankMovements(movRecord);
+
+                const modification = {
+                    description: "Random string"
+                }
+
+                // Then update an movement with wrong ID
+                await model.updateBankMovement(345, modification);
+            
+            }
+            catch(err: any) {
+                expect(err).toBeInstanceOf(PBNotFoundError);
+                errorRaised = true;
+            }
+
+            expect(errorRaised).toBe(true);
+        });
+
+        // TEST - failure due to invalid account ID
+        it('Should throw an error if the account ID is not valid', async () => {
+            let errorRaised = false;
+            const model = new modelImplementation(modelOpts);
+            await model.initModel();
+
+            // Generate basic data for the test
+            const {accArray, catArray, periods} = await setupBankMovementsTest(model);
+
+            try {
+                const movRecord = generateValidBankMovements(1, accArray, catArray, periods);
+                const createdRecord = await model.createBankMovements(movRecord);
+
+                const modification = {
+                    acc_id: Math.max(...accArray) + 1,  // Ensure the ID is not valid
+                };
+
+                await model.updateBankMovement(createdRecord[0].id, modification);
+            }
+            catch(err: any) {
+                expect(err).toBeInstanceOf(PBNotFoundError);
+                errorRaised = true;
+            }
+
+            expect(errorRaised).toBe(true);
+        });
+
+        // TEST - failure due to invalid category ID
+        it('Should throw an error if the category ID is not valid', async () => {
+            let errorRaised = false;
+            const model = new modelImplementation(modelOpts);
+            await model.initModel();
+
+            // Generate basic data for the test
+            const {accArray, catArray, periods} = await setupBankMovementsTest(model);
+
+            try {
+                const movRecord = generateValidBankMovements(1, accArray, catArray, periods);
+                const createdRecord = await model.createBankMovements(movRecord);
+
+                const modification = {
+                    category: Math.max(...catArray) + 1,  // Ensure the ID is not valid
+                };
+
+                await model.updateBankMovement(createdRecord[0].id, modification);
+            }
+            catch(err: any) {
+                expect(err).toBeInstanceOf(PBNotFoundError);
+                errorRaised = true;
+            }
+
+            expect(errorRaised).toBe(true);
+        });
+
+        // TEST - failure due to invalid periodicity
+        it('Should throw an error if the periodicity is not valid', async () => {
+            let errorRaised = false;
+            const model = new modelImplementation(modelOpts);
+            await model.initModel();
+
+            // Generate basic data for the test
+            const {accArray, catArray, periods} = await setupBankMovementsTest(model);
+
+            try {
+                const movRecord = generateValidBankMovements(1, accArray, catArray, periods);
+                const createdRecord = await model.createBankMovements(movRecord);
+
+                const modification = {
+                    periodicity: periods + 1,  // Ensure the ID is not valid
+                };
+
+                await model.updateBankMovement(createdRecord[0].id, modification);
+            }
+            catch(err: any) {
+                expect(err).toBeInstanceOf(PBNotFoundError);
+                errorRaised = true;
+            }
+
+            expect(errorRaised).toBe(true);
+        });
+
+        // TEST - successfull update
+        it('Should update a bank movement', async () => {
+            const model = new modelImplementation(modelOpts);
+            await model.initModel();
+
+            // Generate basic data for the test
+            const {accArray, catArray, periods} = await setupBankMovementsTest(                model);
+
+            const movRecord = generateValidBankMovements(1, accArray, catArray, periods);
+            const createdRecord = await model.createBankMovements(movRecord);
+
+            const modification = {
+                description: 'updated description',
+            };
+
+            const updatedRecord = await model.updateBankMovement(createdRecord[0].id, modification);
+
+            expect(updatedRecord).toEqual({...createdRecord[0], ...modification});
+        });
+    });
+
+    // TEST SUITE - delete bank movement
+    describe('deleteBankMovement()', () => {
+        // TEST - failure due to wrong ID
+        it('Should fail due to wrongly provided ID', async () => {
+            let errorRaised = false;
+            const model = new modelImplementation(modelOpts);
+            await model.initModel();
+
+            // Generate basic data for the test
+            const {accArray, catArray, periods} = await setupBankMovementsTest(                model);
+
+            try {
+                const movRecord = generateValidBankMovements(1, accArray, catArray, periods);
+                await model.createBankMovements(movRecord);
+
+                // Then update an movement with wrong ID
+                await model.deleteBankMovement(345);
+            
+            }
+            catch(err: any) {
+                expect(err).toBeInstanceOf(PBNotFoundError);
+                errorRaised = true;
+            }
+
+            expect(errorRaised).toBe(true);
+        });
+
+        // TEST - successfully delete a bank movement
+        it('Should succeed correctly deleting the specified movement', async () => {
+            const model = new modelImplementation(modelOpts);
+            await model.initModel();
+
+            // Generate basic data for the test
+            const {accArray, catArray, periods} = await setupBankMovementsTest(                model);
+
+            const movRecord = generateValidBankMovements(1, accArray, catArray, periods);
+            const createdRecord = await model.createBankMovements(movRecord);
+
+            const deletedRecord = await model.deleteBankMovement(createdRecord[0].id);
+
+            expect(deletedRecord).toMatchObject({id: createdRecord[0].id, ...movRecord[0]});
+            expect(await model.getBankMovements()).toBeEmpty();
+        })
+    });
+
+    // TEST SUITE - delete all bank movements
+    describe('deleteAllBankMovements()', () => {
+        // TEST - delete all movements
+        it('Should successfully delete all movements', async () => {
+            const model = new modelImplementation(modelOpts);
+            await model.initModel();
+
+            // Generate basic data for the test
+            const {accArray, catArray, periods} = await setupBankMovementsTest(                model);
+
+            const movs = generateValidBankMovements(3, accArray, catArray, periods);
+            await model.createBankMovements(movs);
+            expect(await model.getBankMovements()).not.toBeEmpty();
+
+            await model.deleteAllBankMovements();
+            expect(await model.getBankMovements()).toBeEmpty();
         });
     });
 });
