@@ -17,7 +17,8 @@ interface StaticTableResult extends mysql.RowDataPacket {
     name: string
 }
 interface DBBankAccountType extends mysql.RowDataPacket, BankAccountTypeOut {}
-interface DBBankCategoryTypeExt extends mysql.RowDataPacket, BankCategoryTypeOut {}
+interface DBBankCategoryType extends mysql.RowDataPacket, BankCategoryTypeOut {}
+interface DBBankMovementType extends mysql.RowDataPacket, BankMovementTypeOut {}
 
 
 /**
@@ -270,7 +271,7 @@ export class PiggybankModelMysql implements PiggybankModel {
     getBankCategories = async (): Promise<BankCategoryTypeOut[]> => {
         let ret: BankCategoryTypeOut[] = [];
 
-        const [rows] = await this.pool.query<DBBankCategoryTypeExt[]>(
+        const [rows] = await this.pool.query<DBBankCategoryType[]>(
             "SELECT * FROM bank_categories ORDER BY id ASC"
         );
 
@@ -307,7 +308,7 @@ export class PiggybankModelMysql implements PiggybankModel {
             const firstId = (insertResult as any).insertId;
             const lastId = firstId + (insertResult as any).affectedRows - 1;
 
-            const [rows] = await this.pool.query<DBBankCategoryTypeExt[]>(
+            const [rows] = await this.pool.query<DBBankCategoryType[]>(
                 "SELECT * FROM bank_categories WHERE id BETWEEN ? AND ?",
                 [firstId, lastId]
             );
@@ -363,7 +364,7 @@ export class PiggybankModelMysql implements PiggybankModel {
             values.concat([id.toString()])
         );
 
-        const [rows] = await this.pool.query<DBBankCategoryTypeExt[]>(
+        const [rows] = await this.pool.query<DBBankCategoryType[]>(
             "SELECT * FROM bank_categories WHERE id = ?",
             [id]
         );
@@ -384,7 +385,7 @@ export class PiggybankModelMysql implements PiggybankModel {
      */
     deleteBankCategory = async (id: number): Promise<BankCategoryTypeOut> => {
         // First try to get the category to be deleted
-        const [rows] = await this.pool.query<DBBankCategoryTypeExt[]>(
+        const [rows] = await this.pool.query<DBBankCategoryType[]>(
             "SELECT * FROM bank_categories WHERE id = ?",
             [id]
         );
@@ -411,7 +412,7 @@ export class PiggybankModelMysql implements PiggybankModel {
     deleteAllBankCategories = async (): Promise<BankCategoryTypeOut[]> => {
         let ret: BankCategoryTypeOut[] = [];
 
-        const [rows] = await this.pool.query<DBBankCategoryTypeExt[]>(
+        const [rows] = await this.pool.query<DBBankCategoryType[]>(
             "SELECT * FROM bank_categories ORDER BY id ASC"
         );
 
@@ -437,7 +438,85 @@ export class PiggybankModelMysql implements PiggybankModel {
      * @returns An array of bank movements
      */
     getBankMovements = async (queryOpts: any = {}): Promise<BankMovementTypeOut[]> => {
-        throw new Error("Method not implemented.");
+        let ret: BankMovementTypeOut[] = [];
+        let queryString = "SELECT * FROM bank_movs";
+
+        // Limit results
+        if ("limit" in queryOpts && queryOpts.limit > 1) {
+            queryString += ` LIMIT ${queryOpts.limit}`;
+
+            // Offset query if requested
+            // Page 1 is the first of all (not page 0)
+            if (queryOpts.page ) {
+                let offset: number = 0;
+
+                if (queryOpts.page < 1) {
+                    offset = 0;
+                } else {
+                    offset = (queryOpts.page - 1) * queryOpts.limit;
+                }
+                queryString += ` OFFSET ${offset}`;
+            }
+        }
+
+        // Filter results
+        if (["key", "dateFrom", "dateTo", "valueFrom", "valueTo"].some((key) => key in queryOpts)) {
+            queryString += " WHERE";
+            let queryTokens = [];
+
+            // Search params
+            if ("key" in queryOpts) {
+                let searchTokens = [];
+                const searchFields = ["date", "description", "value", "notes"];
+                
+                searchTokens.push(...searchFields.map((field) => `${field} LIKE '%${queryOpts.key}%'`));
+                searchTokens.push(`acc_id IN (SELECT id FROM bank_accounts WHERE name LIKE '%${queryOpts.key}%')`);
+                searchTokens.push(`category IN (SELECT id FROM bank_categories WHERE name LIKE '%${queryOpts.key}%')`);
+                searchTokens.push(`periodicity IN (SELECT id FROM bank_periodicities WHERE name LIKE '%${queryOpts.key}%')`);
+                
+                queryTokens.push(`(${searchTokens.join(" OR ")})`);
+            }
+            // Filter by date
+            if ("dateFrom" in queryOpts) {
+                queryTokens.push(`date >= DATE('${queryOpts.dateFrom}')`);
+            }
+            if ("dateTo" in queryOpts) {
+                queryTokens.push(`date <= DATE('${queryOpts.dateTo}')`);
+            }
+
+            // Filter by value
+            if ("valueFrom" in queryOpts) {
+                queryTokens.push(`value >= ${queryOpts.valueFrom}`);
+            }
+            if ("valueTo" in queryOpts) {
+                queryTokens.push(`value <= ${queryOpts.valueTo}`);
+            }
+
+            queryString += ` ${queryTokens.join(" AND ")}`;
+        }
+
+        // Sort results
+        if ("sortby" in queryOpts && ["id", "date", "acc_id", "category", "value", "periodicity"].includes(queryOpts.sortby)) {
+            queryString += ` ORDER BY ${queryOpts.sortby}`;
+        }
+        else {
+            queryString += " ORDER BY id";
+        }
+
+        // Sorting direction
+        if ("order" in queryOpts && ["ASC", "DESC"].includes(queryOpts.order.toUpperCase())) {
+            queryString += ` ${queryOpts.order}`;
+        }
+        else {
+            queryString += " ASC";
+        }
+
+        console.log(queryString);
+        [ret] = await this.pool.query<DBBankMovementType[]>(queryString);
+
+        console.log(ret);
+
+        return ret;
     }
 
     /**
