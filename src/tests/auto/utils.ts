@@ -66,10 +66,10 @@ export function generateValidBankMovements(num: number = 1, accs: number[], cats
             acc_id: accs[Math.floor(Math.random()*accs.length)],
             date: faker.date.birthdate().toISOString(),
             category: cats[Math.floor(Math.random()*cats.length)],
-            description: faker.string.sample({min: 100, max: 100}),
+            description: faker.string.sample({min: 50, max: 50}),
             value: Number(faker.finance.amount()),
             periodicity: Math.floor(Math.random()*per),
-            notes: faker.string.sample({min: 200, max: 200}),
+            notes: faker.string.sample({min: 100, max: 100}),
         });
     }
     

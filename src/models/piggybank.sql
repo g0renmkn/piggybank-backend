@@ -109,7 +109,7 @@ CREATE TABLE `bank_categories` (
 -- Table structure for table `bank_movements`
 --
 CREATE TABLE `bank_movs` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `acc_id` int NOT NULL,
   `date` datetime NOT NULL,
   `category` int DEFAULT '1',
