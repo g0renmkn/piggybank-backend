@@ -492,6 +492,14 @@ export class PiggybankModelMysql implements PiggybankModel {
                 queryTokens.push(`value <= ${queryOpts.valueTo}`);
             }
 
+            // Filter by ID
+            if ("idFrom" in queryOpts) {
+                queryTokens.push(`id >= ${queryOpts.idFrom}`);
+            }
+            if ("idTo" in queryOpts) {
+                queryTokens.push(`id <= ${queryOpts.idTo}`);
+            }
+
             queryString += ` ${queryTokens.join(" AND ")}`;
         }
 
@@ -511,10 +519,7 @@ export class PiggybankModelMysql implements PiggybankModel {
             queryString += " ASC";
         }
 
-        console.log(queryString);
         [ret] = await this.pool.query<DBBankMovementType[]>(queryString);
-
-        console.log(ret);
 
         return ret;
     }
