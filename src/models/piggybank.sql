@@ -121,7 +121,7 @@ CREATE TABLE `bank_movs` (
   KEY `acc_id` (`acc_id`),
   KEY `category` (`category`),
   KEY `periodicity` (`periodicity`),
-  CONSTRAINT `bank_movs_ibfk_1` FOREIGN KEY (`acc_id`) REFERENCES `bank_accounts` (`id`),
-  CONSTRAINT `bank_movs_ibfk_2` FOREIGN KEY (`category`) REFERENCES `bank_categories` (`id`),
-  CONSTRAINT `bank_movs_ibfk_3` FOREIGN KEY (`periodicity`) REFERENCES `bank_periodicities` (`id`)
+  CONSTRAINT `fk_acc_id` FOREIGN KEY (`acc_id`) REFERENCES `bank_accounts` (`id`),
+  CONSTRAINT `fk_category` FOREIGN KEY (`category`) REFERENCES `bank_categories` (`id`),
+  CONSTRAINT `fk_periodicity` FOREIGN KEY (`periodicity`) REFERENCES `bank_periodicities` (`id`)
 );
