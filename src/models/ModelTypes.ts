@@ -28,8 +28,9 @@ export type BankMovementTypeIn = z.infer<typeof bankMovementSchema>;
 
 // Modify base type to create valid bank movement output type
 // (Omit "category" and "periodicity" from base type and add them as objects)
-export type BankMovementTypeOut = Omit<BankMovementTypeIn, "category" | "periodicity"> & {
+export type BankMovementTypeOut = Omit<BankMovementTypeIn, "acc_id" | "category" | "periodicity"> & {
     id: number;
+    acc_id: SimpleTableType;
     category: SimpleTableType;
     periodicity: SimpleTableType;
 };

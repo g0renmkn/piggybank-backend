@@ -18,7 +18,7 @@ interface StaticTableResult extends mysql.RowDataPacket {
 }
 interface DBBankAccountType extends mysql.RowDataPacket, BankAccountTypeOut {}
 interface DBBankCategoryType extends mysql.RowDataPacket, BankCategoryTypeOut {}
-interface DBBankMovementType extends mysql.RowDataPacket, BankMovementTypeOut {}
+interface DBBankMovementType extends mysql.RowDataPacket, BankMovementTypeIn {}
 
 
 /**
@@ -439,7 +439,20 @@ export class PiggybankModelMysql implements PiggybankModel {
      */
     getBankMovements = async (queryOpts: any = {}): Promise<BankMovementTypeOut[]> => {
         let ret: BankMovementTypeOut[] = [];
-        let queryString = "SELECT * FROM bank_movs";
+        let queryString = `
+            SELECT 
+                bank_movs.*,
+                bank_accounts.name as acc_name, 
+                bank_categories.name as cat_name,
+                bank_periodicities.name as per_name
+            FROM bank_movs 
+            LEFT JOIN 
+                bank_accounts ON bank_movs.acc_id = bank_accounts.id 
+            LEFT JOIN 
+                bank_categories ON bank_movs.category = bank_categories.id
+            LEFT JOIN 
+                bank_periodicities ON bank_movs.periodicity = bank_periodicities.id
+            `;
 
         // Limit results
         if ("limit" in queryOpts && queryOpts.limit > 1) {
@@ -460,7 +473,7 @@ export class PiggybankModelMysql implements PiggybankModel {
         }
 
         // Filter results
-        if (["key", "dateFrom", "dateTo", "valueFrom", "valueTo"].some((key) => key in queryOpts)) {
+        if (["key", "dateFrom", "dateTo", "valueFrom", "valueTo", "idFrom", "idTo"].some((key) => key in queryOpts)) {
             queryString += " WHERE";
             let queryTokens = [];
 
@@ -469,35 +482,35 @@ export class PiggybankModelMysql implements PiggybankModel {
                 let searchTokens = [];
                 const searchFields = ["date", "description", "value", "notes"];
                 
-                searchTokens.push(...searchFields.map((field) => `${field} LIKE '%${queryOpts.key}%'`));
-                searchTokens.push(`acc_id IN (SELECT id FROM bank_accounts WHERE name LIKE '%${queryOpts.key}%')`);
-                searchTokens.push(`category IN (SELECT id FROM bank_categories WHERE name LIKE '%${queryOpts.key}%')`);
-                searchTokens.push(`periodicity IN (SELECT id FROM bank_periodicities WHERE name LIKE '%${queryOpts.key}%')`);
+                searchTokens.push(...searchFields.map((field) => `bank_movs.${field} LIKE '%${queryOpts.key}%'`));
+                searchTokens.push(`bank_movs.acc_id IN (SELECT id FROM bank_accounts WHERE name LIKE '%${queryOpts.key}%')`);
+                searchTokens.push(`bank_movs.category IN (SELECT id FROM bank_categories WHERE name LIKE '%${queryOpts.key}%')`);
+                searchTokens.push(`bank_movs.periodicity IN (SELECT id FROM bank_periodicities WHERE name LIKE '%${queryOpts.key}%')`);
                 
                 queryTokens.push(`(${searchTokens.join(" OR ")})`);
             }
             // Filter by date
             if ("dateFrom" in queryOpts) {
-                queryTokens.push(`date >= DATE('${queryOpts.dateFrom}')`);
+                queryTokens.push(`bank_movs.date >= DATE('${queryOpts.dateFrom}')`);
             }
             if ("dateTo" in queryOpts) {
-                queryTokens.push(`date <= DATE('${queryOpts.dateTo}')`);
+                queryTokens.push(`bank_movs.date <= DATE('${queryOpts.dateTo}')`);
             }
 
             // Filter by value
             if ("valueFrom" in queryOpts) {
-                queryTokens.push(`value >= ${queryOpts.valueFrom}`);
+                queryTokens.push(`bank_movs.value >= ${queryOpts.valueFrom}`);
             }
             if ("valueTo" in queryOpts) {
-                queryTokens.push(`value <= ${queryOpts.valueTo}`);
+                queryTokens.push(`bank_movs.value <= ${queryOpts.valueTo}`);
             }
 
             // Filter by ID
             if ("idFrom" in queryOpts) {
-                queryTokens.push(`id >= ${queryOpts.idFrom}`);
+                queryTokens.push(`bank_movs.id >= ${queryOpts.idFrom}`);
             }
             if ("idTo" in queryOpts) {
-                queryTokens.push(`id <= ${queryOpts.idTo}`);
+                queryTokens.push(`bank_movs.id <= ${queryOpts.idTo}`);
             }
 
             queryString += ` ${queryTokens.join(" AND ")}`;
@@ -519,7 +532,29 @@ export class PiggybankModelMysql implements PiggybankModel {
             queryString += " ASC";
         }
 
-        [ret] = await this.pool.query<DBBankMovementType[]>(queryString);
+        const [result] = await this.pool.query<DBBankMovementType[]>(queryString);
+
+        ret = result.map((row) => {
+            return {
+                id: row.id,
+                acc_id: {
+                    id: row.acc_id,
+                    name: row.acc_name
+                },
+                date: row.date,
+                category: {
+                    id: row.category,
+                    name: row.cat_name
+                },
+                description: row.description,
+                value: row.value,
+                periodicity: {
+                    id: row.periodicity,
+                    name: row.per_name
+                },
+                notes: row.notes
+            };
+        });
 
         return ret;
     }
